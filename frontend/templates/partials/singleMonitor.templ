@@ -1,0 +1,65 @@
+package partials
+
+import (
+    "strconv"
+)
+
+templ SingleMonitor(up bool, name string, intervalInSeconds int) {
+    <div class="row my-2 mx-3">
+        <div class="card bg-light-subtle">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-1 d-flex justify-content-center my-2 pe-0">
+                    if up {
+                        <i class="bi bi-arrow-up-circle text-success" style="font-size: 1.5rem; -webkit-text-stroke: 1.5px;"></i>
+                    } else {
+                        <i class="bi bi-arrow-down-circle text-danger" style="font-size: 1.5rem; -webkit-text-stroke: 1.5px;"></i>
+                    }
+                    </div>
+                    <div class="col d-flex flex-column">
+                        <div class="col align-self-start"> { name } </div>
+                        <div class="col align-self-start fw-light lh-sm" style="font-size: 0.7rem;"> up for 2 secs </div>
+                    </div>
+                    <div class="col-4">
+                        @intervalColumn(intervalInSeconds)
+                        //TODO: add up / down chart with percentage
+                    </div>
+                    <div class="col-1 d-flex justify-content-center my-2 pe-0">
+                        @singleMonitorMenu()
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+templ intervalColumn(intervalInSeconds int) {
+    <i class="bi bi-info" data-bs-toggle="tooltip" data-bs-placement="left" 
+    data-bs-title={ getTooltipMessage(intervalInSeconds) }></i>  
+    { intervalSecondsToHumanReadable(intervalInSeconds) }
+}
+
+templ singleMonitorMenu() {
+    <div class="dropdown">
+        <i class="bi bi-gear" type="button"  data-bs-toggle="dropdown" aria-expanded="false"></i>
+        <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
+            <li><a class="dropdown-item" href="#">Edit Monitor</a></li>
+            <li><a class="dropdown-item" href="#">Pause Monitor</a></li>
+            <li><a class="dropdown-item" href="#">Delete Monitor</a></li>
+        </ul>
+    </div>
+}
+
+func intervalSecondsToHumanReadable(intervalInSeconds int) string {
+    if intervalInSeconds <= 60 {
+        return strconv.Itoa(intervalInSeconds) + " secs"
+    } else if intervalInSeconds <= 3600 {
+        return strconv.Itoa(intervalInSeconds / 60) + " mins"
+    } else {
+        return strconv.Itoa(intervalInSeconds / 3600) + " hours"
+    }
+}
+
+func getTooltipMessage(intervalInSeconds int) string {
+    return "Refresh happens every " + intervalSecondsToHumanReadable(intervalInSeconds) + "."
+}
