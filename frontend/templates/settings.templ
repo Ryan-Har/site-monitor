@@ -1,0 +1,18 @@
+package templates
+
+import(
+    "github.com/Ryan-Har/site-monitor/frontend/templates/partials"
+)
+
+templ Settings(settingsNavBar templ.Component) {
+    <div class="container-fluid">
+        <div class="row flex-nowrap">
+            @partials.SideBar()
+            <div class="col py-3">
+                @settingsNavBar
+                //right side content
+            </div>
+        </div>
+    </div>
+    @EnableTooltip()
+}

@@ -21,14 +21,23 @@ templ ScriptsStandard() {
         const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
         document.documentElement.setAttribute('data-bs-theme', newTheme);
     }
-    const intervalId = setInterval(toggleTheme, 3000);
+    //const intervalId = setInterval(toggleTheme, 3000);
     </script>
 }
 
-
+//enables bootstrap tooltips
 templ EnableTooltip() {
     <script>
         const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
         const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
     </script>
+}
+
+templ Layout(title string, contents templ.Component) {
+    <!DOCTYPE html>
+    <html>
+        @HeadStandard(title)
+        @contents
+        @ScriptsStandard()
+    </html>
 }

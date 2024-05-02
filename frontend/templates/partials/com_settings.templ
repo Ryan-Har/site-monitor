@@ -1,0 +1,31 @@
+package partials
+
+
+
+// SettingsNavBar is a partial that renders a navigation bar for the settings page
+// activeItem is the name of the active item in the navigation bar
+templ SettingsNavBar(activeItem string) {
+    <ul class="nav nav-tabs">
+        <li class="nav-item">
+            if activeItem == "account" {
+                <a class="nav-link active" aria-current="page" href="/settings/account">Account</a>
+            } else {
+                <a class="nav-link" href="/settings/account">Account</a>
+            }
+        </li>
+        <li class="nav-item">
+            if activeItem == "notifications" {
+                <a class="nav-link active" aria-current="page" href="/settings/notifications">Notifications</a>
+            } else {
+                <a class="nav-link" href="/settings/notifications">Notifications</a>
+            }
+        </li>
+        <li class="nav-item">
+            if activeItem == "security" {
+                <a class="nav-link active" aria-current="page" href="/settings/security">Security</a>
+            } else {
+                <a class="nav-link" href="/settings/security">Security</a>
+            }
+        </li>
+    </ul>
+}

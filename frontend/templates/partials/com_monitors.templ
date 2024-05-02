@@ -4,9 +4,65 @@ import (
     "strconv"
 )
 
+templ MonitorOptions() {
+    <div class="row my-2 mx-3">
+        <div class="col">
+            <h4>Monitors</h4>
+        </div>
+        <div class="col-auto ml-auto">
+            <button class="btn btn-primary btn-sm" onclick="addMonitor()">Add Monitor</button>
+        </div>
+    </div>
+}
+
+
+// MonitorStatus displays the status of the monitors, how many are up, down, and paused
+//input: up, down, paused as string
+templ MonitorStatus(up string, down string, paused string) {
+    <div class="row me-2 my-2">
+        <div class="card bg-dark-subtle">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col">
+                        <h4>Monitor Status</h4>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-4">
+                        { up }
+                    </div>
+                    <div class="col-4">
+                        { down }
+                    </div>
+                    <div class="col-4">
+                        { paused }
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-4 fw-light lh-sm" style="font-size: 0.7rem;">
+                        Up
+                    </div>
+                    <div class="col-4 fw-light lh-sm" style="font-size: 0.7rem;">
+                        Down
+                    </div>
+                    <div class="col-4 fw-light lh-sm" style="font-size: 0.7rem;">
+                        Paused
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+templ MultipleMonitors() {
+    @SingleMonitor(true, "Monitor 1", 2)
+    @SingleMonitor(false, "Monitor 2", 60)
+    @SingleMonitor(true, "Monitor 3", 3600)
+}
+
 templ SingleMonitor(up bool, name string, intervalInSeconds int) {
     <div class="row my-2 mx-3">
-        <div class="card bg-light-subtle">
+        <div class="card bg-dark-subtle">
             <div class="card-body">
                 <div class="row">
                     <div class="col-1 d-flex justify-content-center my-2 pe-0">

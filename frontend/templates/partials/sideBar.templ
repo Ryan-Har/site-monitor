@@ -1,0 +1,54 @@
+package partials
+
+templ SideBar() {
+    <div class="col-2 col-sm-3 col-xl-2 px-sm-1 px-0 bg-dark-subtle">
+        <div class="d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 min-vh-100">
+            @sideBarNavInfo()
+            <hr></hr>
+            @sideBarUserSection()
+        </div>
+    </div>
+}
+
+templ sideBarNavInfo() {
+    <a href="/" class="d-flex align-items-center pb-3 mb-md-0 me-md-auto text-decoration-none">
+        <span class="fs-5 d-none d-sm-inline">Menu</span>
+    </a>
+    <ul class="nav nav-pills flex-column mb-auto  align-items-center align-items-sm-start" id="menu">
+        <li class="nav-item">
+            <a href="/monitors" class="nav-link align-middle px-0">
+                <i class="fs-4 bi-activity"></i> <span class="ms-1 d-none d-sm-inline">Monitors</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="/incidents" class="nav-link align-middle px-0">
+                <i class="fs-4 bi-exclamation-triangle"></i> <span class="ms-1 d-none d-sm-inline">Incidents</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="/maintenance" class="nav-link align-middle px-0">
+                <i class="fs-4 bi-wrench"></i> <span class="ms-1 d-none d-sm-inline">Maintenance</span></a>
+        </li>
+    </ul>
+}
+
+templ sideBarUserSection() {
+    <div class="dropdown pb-4 text-decoration-none align-items-center justify-content-center">
+        <img src="https://github.com/mdo.png" alt="hugenerd" width="40" height="40" class="rounded-circle"></img>
+        <span class="mx-2 text-secondary-emphasis">loser</span>
+        <i class="bi bi-three-dots" data-bs-toggle="dropdown" aria-expanded="false"></i>
+        <ul class="dropdown-menu" aria-labelledby="dropdownUser1">
+            <li><a class="dropdown-item" href="/settings/account">Settings</a></li>
+            <li>
+                <button class="dropdown-item" type="button" onclick="toggleTheme()">
+                    Toggle dark mode
+                </button>
+            </li>
+            <li><a class="dropdown-item" href="#">P</a></li>
+            <li>
+                <hr class="dropdown-divider"></hr>
+            </li>
+            <li><a class="dropdown-item" href="#">Sign out</a></li>
+        </ul>
+    </div>
+}

@@ -1,0 +1,19 @@
+package templates
+
+import(
+    "github.com/Ryan-Har/site-monitor/frontend/templates/partials"
+)
+
+templ MonitorOverview(monitorCards templ.Component) {
+    <div class="container-fluid">
+        <div class="row flex-nowrap">
+            @partials.SideBar()
+            <div class="col py-3">
+                //right side content
+                @partials.MonitorOptions()
+                @monitorCards
+            </div>
+        </div>
+    </div>
+    @EnableTooltip()
+}

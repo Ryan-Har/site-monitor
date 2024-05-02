@@ -14,35 +14,7 @@ import (
 	"github.com/Ryan-Har/site-monitor/frontend/templates/partials"
 )
 
-type exampleMonitor struct {
-	Name          string
-	URL           string
-	Interval      int
-	CurrentStatus bool
-}
-
-var exampleMonitors = []exampleMonitor{
-	{
-		Name:          "Google",
-		URL:           "https://www.google.com",
-		Interval:      60,
-		CurrentStatus: true,
-	},
-	{
-		Name:          "Yahoo",
-		URL:           "https://www.yahoo.com",
-		Interval:      300,
-		CurrentStatus: false,
-	},
-	{
-		Name:          "Bing",
-		URL:           "https://www.bing.com",
-		Interval:      3601,
-		CurrentStatus: true,
-	},
-}
-
-func Monitors() templ.Component {
+func Settings(settingsNavBar templ.Component) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
 		if !templ_7745c5c3_IsBuffer {
@@ -55,17 +27,23 @@ func Monitors() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		templ_7745c5c3_Err = HeadStandard("Monitors").Render(ctx, templ_7745c5c3_Buffer)
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"container-fluid\"><div class=\"row flex-nowrap\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		for _, monitor := range exampleMonitors {
-			templ_7745c5c3_Err = partials.SingleMonitor(monitor.CurrentStatus, monitor.Name, monitor.Interval).Render(ctx, templ_7745c5c3_Buffer)
-			if templ_7745c5c3_Err != nil {
-				return templ_7745c5c3_Err
-			}
+		templ_7745c5c3_Err = partials.SideBar().Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = ScriptsStandard().Render(ctx, templ_7745c5c3_Buffer)
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"col py-3\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = settingsNavBar.Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
