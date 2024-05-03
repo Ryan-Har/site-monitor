@@ -8,6 +8,7 @@ import (
 )
 
 func main() {
+	http.Handle("/assets/", http.StripPrefix("/assets/", http.FileServer(http.Dir("assets"))))
 
 	http.HandleFunc("/signup", handlers.NewGetSignupHandler().ServeHTTP)
 	http.HandleFunc("/login", handlers.NewGetLoginHandler().ServeHTTP)
