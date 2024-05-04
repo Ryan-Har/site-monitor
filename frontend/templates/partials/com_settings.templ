@@ -5,7 +5,7 @@ package partials
 // SettingsNavBar is a partial that renders a navigation bar for the settings page
 // activeItem is the name of the active item in the navigation bar
 templ SettingsNavBar(activeItem string) {
-    <ul class="nav nav-tabs">
+    <ul class="nav nav-tabs flex-nowrap overflow-x-auto">
         <li class="nav-item">
             if activeItem == "account" {
                 <a class="nav-link active" aria-current="page" href="/settings/account">Account</a>
@@ -29,3 +29,24 @@ templ SettingsNavBar(activeItem string) {
         </li>
     </ul>
 }
+
+
+templ ToggleThemeCard() {
+    <div class="container-md">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Dark Mode</h5>
+                <hr></hr>
+                <div class="row">
+                    <div class="col-auto">
+                        Toggle dark mode on or off
+                    </div>
+                    <div class="col text-end">
+                        <button type="button" class="btn btn-primary" onclick="toggleTheme()">Toggle Theme</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+

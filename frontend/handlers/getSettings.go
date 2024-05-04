@@ -25,8 +25,9 @@ func NewGetSecuritySettingsHandler() *GetSecuritySettingsHandler {
 }
 
 func (h *GetAccountSettingsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	n := partials.SettingsNavBar("account")
-	c := templates.Settings(n)
+	nav := partials.SettingsNavBar("account")
+	acc := templates.SettingsAccount()
+	c := templates.Settings(nav, acc)
 	err := templates.Layout("Settings", c).Render(r.Context(), w)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -35,8 +36,9 @@ func (h *GetAccountSettingsHandler) ServeHTTP(w http.ResponseWriter, r *http.Req
 }
 
 func (h *GetNotificationSettingsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	n := partials.SettingsNavBar("notifications")
-	c := templates.Settings(n)
+	nav := partials.SettingsNavBar("notifications")
+	not := templates.SettingsNotifications()
+	c := templates.Settings(nav, not)
 	err := templates.Layout("Settings", c).Render(r.Context(), w)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -45,8 +47,9 @@ func (h *GetNotificationSettingsHandler) ServeHTTP(w http.ResponseWriter, r *htt
 }
 
 func (h *GetSecuritySettingsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	n := partials.SettingsNavBar("security")
-	c := templates.Settings(n)
+	nav := partials.SettingsNavBar("security")
+	sec := templates.SettingsSecurity()
+	c := templates.Settings(nav, sec)
 	err := templates.Layout("Settings", c).Render(r.Context(), w)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)

@@ -87,7 +87,7 @@ func sideBarUserSection() templ.Component {
 			templ_7745c5c3_Var3 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"dropdown pb-4 text-decoration-none align-items-center justify-content-center\"><img src=\"https://github.com/mdo.png\" alt=\"hugenerd\" width=\"40\" height=\"40\" class=\"rounded-circle\"> <span class=\"mx-2 text-secondary-emphasis\">loser</span> <i class=\"bi bi-three-dots\" data-bs-toggle=\"dropdown\" aria-expanded=\"false\"></i><ul class=\"dropdown-menu\" aria-labelledby=\"dropdownUser1\"><li><a class=\"dropdown-item\" href=\"/settings/account\">Settings</a></li><li><button class=\"dropdown-item\" type=\"button\" onclick=\"toggleTheme()\">Toggle dark mode</button></li><li><a class=\"dropdown-item\" href=\"#\">P</a></li><li><hr class=\"dropdown-divider\"></li><li><a class=\"dropdown-item\" href=\"#\">Sign out</a></li></ul></div>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"dropdown pb-4 text-decoration-none align-items-center justify-content-center\"><img src=\"https://github.com/mdo.png\" alt=\"hugenerd\" width=\"40\" height=\"40\" class=\"rounded-circle\"> <span class=\"mx-2 text-secondary-emphasis\">loser</span> <i class=\"bi bi-three-dots\" data-bs-toggle=\"dropdown\" aria-expanded=\"false\"></i><ul class=\"dropdown-menu\" aria-labelledby=\"dropdownUser1\"><li><a class=\"dropdown-item\" href=\"/settings/account\">Settings</a></li><li><hr class=\"dropdown-divider\"></li><li><a class=\"dropdown-item\" href=\"#\">Sign out</a></li></ul></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
