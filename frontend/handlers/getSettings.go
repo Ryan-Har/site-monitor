@@ -26,7 +26,7 @@ func NewGetSecuritySettingsHandler() *GetSecuritySettingsHandler {
 
 func (h *GetAccountSettingsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	nav := partials.SettingsNavBar("account")
-	acc := templates.SettingsAccount()
+	acc := templates.SettingsAccount("Ryan Harris")
 	c := templates.Settings(nav, acc)
 	err := templates.Layout("Settings", c).Render(r.Context(), w)
 	if err != nil {

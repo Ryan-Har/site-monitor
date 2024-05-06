@@ -19,8 +19,14 @@ templ Settings(settingsNavBar templ.Component, settingsContent templ.Component) 
 }
 
 //Account portions of the settings page
-templ SettingsAccount() {
+templ SettingsAccount(currentName string) {
     <div class="container">
+        <div class="row m-4">
+            @partials.ChangeFullNameCard(currentName)
+        </div>
+        <div class="row m-4">
+            @partials.ChangeEmailCard()
+        </div>
         <div class="row m-4">
             @partials.ToggleThemeCard()
         </div>

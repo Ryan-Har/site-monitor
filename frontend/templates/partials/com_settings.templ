@@ -30,6 +30,49 @@ templ SettingsNavBar(activeItem string) {
     </ul>
 }
 
+templ ChangeFullNameCard(currentName string) {
+    <div class="container-md">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Change Name</h5>
+                <hr></hr>
+                <form action="/settings/account/change-full-name" method="post">
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Full Name</label>
+                        <input type="text" class="form-control" id="name" name="name" value={ currentName } required></input>
+                    </div>
+                    <div class="text-end">
+                        <button type="submit" class="btn btn-primary">Change Name</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+}
+
+templ ChangeEmailCard() {
+    <div class="container-md">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Change Email</h5>
+                <hr></hr>
+                <form action="/settings/account/change-email" method="post">
+                    <div class="mb-3">
+                        <label for="email" class="form-label">New Email</label>
+                        <input type="email" class="form-control" id="email" name="email" required></input>
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Password</label>
+                        <input type="password" class="form-control" id="password" name="password" required></input>
+                    </div>
+                    <div class="text-end">
+                        <button type="submit" class="btn btn-primary">Change Email</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+}
 
 templ ToggleThemeCard() {
     <div class="container-md">
