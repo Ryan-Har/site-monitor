@@ -13,6 +13,8 @@ func main() {
 	http.HandleFunc("/signup", handlers.NewGetSignupHandler().ServeHTTP)
 	http.HandleFunc("/login", handlers.NewGetLoginHandler().ServeHTTP)
 	http.HandleFunc("/monitors", handlers.NewGetMonitorOverviewHandler().ServeHTTP)
+	http.HandleFunc("/maintenance", handlers.NewGetMaintenanceHandler().ServeHTTP)
+	http.HandleFunc("/incidents", handlers.NewGetIncidentsHandler().ServeHTTP)
 	http.HandleFunc("/settings/account", handlers.NewGetAccountSettingsHandler().ServeHTTP)
 	http.HandleFunc("/settings/notifications", handlers.NewGetNotificationSettingsHandler().ServeHTTP)
 	http.HandleFunc("/settings/security", handlers.NewGetSecuritySettingsHandler().ServeHTTP)

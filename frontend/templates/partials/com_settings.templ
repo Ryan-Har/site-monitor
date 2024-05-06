@@ -5,7 +5,7 @@ package partials
 // SettingsNavBar is a partial that renders a navigation bar for the settings page
 // activeItem is the name of the active item in the navigation bar
 templ SettingsNavBar(activeItem string) {
-    <ul class="nav nav-tabs flex-nowrap overflow-x-auto">
+    <ul class="nav nav-tabs flex-nowrap overflow-x-auto overflow-y-hidden">
         <li class="nav-item">
             if activeItem == "account" {
                 <a class="nav-link active" aria-current="page" href="/settings/account">Account</a>
