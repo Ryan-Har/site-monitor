@@ -4,13 +4,14 @@ import (
     "strconv"
 )
 
+//MonitorOptions displays the options to add a new monitor
 templ MonitorOptions() {
     <div class="row my-2 mx-3">
         <div class="col">
             <h4>Monitors</h4>
         </div>
         <div class="col-auto ml-auto">
-            <button class="btn btn-primary btn-sm" onclick="addMonitor()">Add Monitor</button>
+            <a class="btn btn-primary btn-sm" href="/monitors/new">Add Monitor</a>
         </div>
     </div>
 }
@@ -54,12 +55,7 @@ templ MonitorStatus(up string, down string, paused string) {
     </div>
 }
 
-templ MultipleMonitors() {
-    @SingleMonitor(true, "Monitor 1", 2)
-    @SingleMonitor(false, "Monitor 2", 60)
-    @SingleMonitor(true, "Monitor 3", 3600)
-}
-
+// SingleMonitor displays a single monitor card
 templ SingleMonitor(up bool, name string, intervalInSeconds int) {
     <div class="row my-2 mx-3">
         <div class="card bg-dark-subtle">
@@ -118,4 +114,136 @@ func intervalSecondsToHumanReadable(intervalInSeconds int) string {
 
 func getTooltipMessage(intervalInSeconds int) string {
     return "Refresh happens every " + intervalSecondsToHumanReadable(intervalInSeconds) + "."
+}
+
+templ monitorFormTitle() {
+    <div class="row my-2 mx-3">
+        <h4> Add Monitor </h4>
+    </div>
+}
+
+templ MonitorForm() {
+    @monitorFormTitle()
+    <div class="row my-2 mx-3">
+        <div class="card bg-dark-subtle">
+            <div class="card-body">
+                <form action="/submit" method="post" hx-boost="true" hx-target="#formContent">
+                    <div class="my-2">
+                        <label for="typeSelection" class="form-label">Monitor Type</label>
+                        <select class="form-select" id="typeSelection" name="typeSelection" hx-get="/monitors/getCreateFormInfo" hx-trigger="change">
+                        <option hidden disabled selected value> -- select an option -- </option>
+                        <option value="http">HTTP / Website Monitoring</option>
+                        <option value="ping">PING Monitoring</option>
+                        <option value="port">Port Monitoring</option>
+                    </select>
+                    <hr></hr>
+                    </div>
+
+                    <div id="formContent">
+
+                    </div>
+                    <div class="text-end">
+                        <button class="btn btn-primary" type="submit">Submit</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+}
+
+templ MonitorFormContentHTTP() {
+    @MonitorLocationHttp()
+    <hr></hr>
+    @NotificationSelection(getSampleNotifications())
+    <hr></hr>
+    @MonitorInterval()
+    <hr></hr>
+    @TimeoutInterval()
+    <hr></hr>
+}
+
+templ MonitorFormContentPing() {
+    @MonitorLocationPing()
+    <hr></hr>
+    @NotificationSelection(getSampleNotifications())
+    <hr></hr>
+    @MonitorInterval()
+    <hr></hr>
+
+}
+
+templ MonitorFormContentPort() {
+    @MonitorLocationPort()
+    <hr></hr>
+    @NotificationSelection(getSampleNotifications())
+    <hr></hr>
+    @MonitorInterval()
+    <hr></hr>
+    @TimeoutInterval()
+    <hr></hr>
+}
+
+templ MonitorLocationPing() {
+    <label for="monitorLocation" class="form-label">IP Or Host To Monitor</label>
+    <input type="text" class="form-control" id="monitorLocation" name="monitorLocation" placeholder="example.com OR 8.8.8.8"></input>
+}
+
+templ MonitorLocationHttp() {
+    <label for="monitorLocation" class="form-label">URL To Monitor</label>
+    <input type="text" class="form-control" id="monitorLocation" name="monitorLocation" placeholder="https://www.example.com"></input>
+}
+
+templ MonitorLocationPort() {
+    <div class="row">
+        <div class="col-6">
+            <label for="monitorLocation" class="form-label">URL, IP Or Host To Monitor</label>
+            <input type="text" class="form-control" id="monitorLocation" name="monitorLocation" placeholder="example.com OR 8.8.8.8"></input>
+        </div>
+        <div class="col-6">
+            <label for="monitorPort" class="form-label">Port To Monitor</label>
+            <input type="number" class="form-control" id="monitorPort" name="monitorPort" placeholder="143"></input>
+        </div>
+    </div>
+}
+
+templ NotificationSelection(notifs map[int]string) {
+    <label for="notificationSelection" class="form-label">Notification Method</label>
+    <select class="form-select" id="notificationSelection" name="notificationSelection">
+        if len(notifs) == 0 {
+            <option hidden disabled selected value> -- no notifications set up -- </option>
+        } else {
+            <option hidden disabled selected value> -- select an option -- </option>
+            for key, value := range notifs {
+                <option value={ strconv.Itoa(key) }>{value}</option>
+            }
+        }
+    </select>
+
+}
+
+templ MonitorInterval() {
+    <label for="monitorIntervalNumber" class="form-label">Monitor Interval (minutes)</label>
+    <input type="range" class="form-range" id="monitorIntervalRange" name="monitorIntervalRange" min="1" max="60" value="5" oninput="this.form.monitorIntervalNumber.value=this.value"></input>
+    <input type="number" class="form-input" id="monitorIntervalNumber" name="monitorIntervalNumber" min="1" max="60" value="5" oninput="this.form.monitorIntervalRange.value=this.value"/>
+}
+
+templ TimeoutInterval() {
+    <label for="timeoutIntervalNumber" class="form-label">Timeout Interval (seconds)</label>
+    <input type="range" class="form-range" id="timeoutIntervalRange" name="timeoutIntervalRange" min="1" max="60" value="5" oninput="this.form.timeoutIntervalNumber.value=this.value"></input>
+    <input type="number" class="form-input" id="timeoutIntervalNumber" name="timeoutIntervalNumber" min="1" max="60" value="5" oninput="this.form.timeoutIntervalRange.value=this.value"/>
+}
+
+//These are for testing purposes, until the actual data is available
+templ MultipleMonitors() {
+    @SingleMonitor(true, "Monitor 1", 2)
+    @SingleMonitor(false, "Monitor 2", 60)
+    @SingleMonitor(true, "Monitor 3", 3600)
+}
+
+func getSampleNotifications() map[int]string {
+    return map[int]string{
+        1: "Email",
+        2: "Webhook1",
+        3: "Slack",
+    }
 }
