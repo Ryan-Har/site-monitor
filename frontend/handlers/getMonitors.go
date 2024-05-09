@@ -1,9 +1,11 @@
 package handlers
 
 import (
+	"fmt"
+	"net/http"
+
 	"github.com/Ryan-Har/site-monitor/frontend/templates"
 	"github.com/Ryan-Har/site-monitor/frontend/templates/partials"
-	"net/http"
 )
 
 type GetMonitorOverviewHandler struct{}
@@ -16,6 +18,12 @@ type GetMonitorFormHandler struct{}
 
 func NewGetMonitorFormHandler() *GetMonitorFormHandler {
 	return &GetMonitorFormHandler{}
+}
+
+type GetMonitorByID struct{}
+
+func NewGetMonitorByID() *GetMonitorByID {
+	return &GetMonitorByID{}
 }
 
 func (h *GetMonitorOverviewHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -68,6 +76,19 @@ func (h *GetMonitorFormHandler) ServeFormContent(w http.ResponseWriter, r *http.
 		}
 	default:
 		http.Error(w, "Invalid typeSelection", http.StatusBadRequest)
+		return
+	}
+}
+
+func (h *GetMonitorByID) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	id := r.PathValue("monitorid")
+	if id == "" {
+		http.Error(w, "monitorid not found in query string", http.StatusBadRequest)
+		return
+	}
+	fmt.Println(id)
+	if _, err := fmt.Fprintf(w, "Getting monitor with id: %s", id); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 }
