@@ -101,7 +101,7 @@ func ChangeFullNameCard(currentName string) templ.Component {
 		var templ_7745c5c3_Var3 string
 		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(currentName)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/partials/com_settings.templ`, Line: 42, Col: 105}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/partials/com_settings.templ`, Line: 40, Col: 105}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 		if templ_7745c5c3_Err != nil {
