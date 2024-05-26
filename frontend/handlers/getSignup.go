@@ -7,8 +7,8 @@ import (
 
 type GetSignupHandler struct{}
 
-func NewGetSignupHandler() *GetLoginHandler {
-	return &GetLoginHandler{}
+func NewGetSignupHandler() *GetSignupHandler {
+	return &GetSignupHandler{}
 }
 
 func (h *GetSignupHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
