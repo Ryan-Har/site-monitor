@@ -1,0 +1,16 @@
+package templates
+
+import(
+    "github.com/Ryan-Har/site-monitor/src/templates/partials"
+)
+
+templ Incidents() {
+     <div class="container-fluid">
+        <div class="row flex-nowrap">
+            @partials.SideBar()
+            <div class="col py-3">
+                //right side content
+            </div>
+        </div>
+    </div>
+}
