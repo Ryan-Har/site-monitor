@@ -1,8 +1,8 @@
 package handlers
 
 import (
+	"fmt"
 	"github.com/Ryan-Har/site-monitor/src/templates"
-	//"github.com/Ryan-Har/site-monitor/src/templates/partials"
 	"net/http"
 )
 
@@ -13,9 +13,13 @@ func NewGetMaintenanceHandler() *GetMaintenanceHandler {
 }
 
 func (h *GetMaintenanceHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	c := templates.Maintenance()
+	userInfo, err := GetUserInfoFromContext(r.Context())
+	if err != nil {
+		fmt.Println(err)
+	}
+	c := templates.Maintenance(userInfo)
 
-	err := templates.Layout("Maintenance", c).Render(r.Context(), w)
+	err = templates.Layout("Maintenance", c).Render(r.Context(), w)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

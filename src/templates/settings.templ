@@ -2,12 +2,13 @@ package templates
 
 import(
     "github.com/Ryan-Har/site-monitor/src/templates/partials"
+    "github.com/Ryan-Har/site-monitor/src/models"
 )
 
-templ Settings(settingsNavBar templ.Component, settingsContent templ.Component) {
+templ Settings(settingsNavBar templ.Component, settingsContent templ.Component, userInfo models.UserInfo) {
     <div class="container-fluid">
         <div class="row flex-nowrap">
-            @partials.SideBar()
+            @partials.SideBar(userInfo)
             <div class="col py-3">
                 //right side content
                 @settingsNavBar
@@ -16,6 +17,7 @@ templ Settings(settingsNavBar templ.Component, settingsContent templ.Component) 
         </div>
     </div>
     @EnableTooltip()
+    @partials.RenewAuthToken()
 }
 
 //Account portions of the settings page

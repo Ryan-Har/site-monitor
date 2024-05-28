@@ -10,7 +10,11 @@ import "context"
 import "io"
 import "bytes"
 
-func SideBar() templ.Component {
+import (
+	"github.com/Ryan-Har/site-monitor/src/models"
+)
+
+func SideBar(userInfo models.UserInfo) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
 		if !templ_7745c5c3_IsBuffer {
@@ -35,7 +39,7 @@ func SideBar() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = sideBarUserSection().Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = sideBarUserSection(userInfo.Name).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -74,7 +78,7 @@ func sideBarNavInfo() templ.Component {
 	})
 }
 
-func sideBarUserSection() templ.Component {
+func sideBarUserSection(name string) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
 		if !templ_7745c5c3_IsBuffer {
@@ -87,7 +91,20 @@ func sideBarUserSection() templ.Component {
 			templ_7745c5c3_Var3 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"dropdown pb-4 text-decoration-none align-items-center justify-content-center\"><img src=\"https://github.com/mdo.png\" alt=\"hugenerd\" width=\"40\" height=\"40\" class=\"rounded-circle\"> <span class=\"mx-2 text-secondary-emphasis\">loser</span> <i class=\"bi bi-three-dots\" data-bs-toggle=\"dropdown\" aria-expanded=\"false\"></i><ul class=\"dropdown-menu\" aria-labelledby=\"dropdownUser1\"><li><a class=\"dropdown-item\" href=\"/settings/account\">Settings</a></li><li><hr class=\"dropdown-divider\"></li><li><a class=\"dropdown-item\" href=\"#\">Sign out</a></li></ul></div>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"dropdown pb-4 text-decoration-none align-items-center justify-content-center\"><img src=\"https://github.com/mdo.png\" alt=\"hugenerd\" width=\"40\" height=\"40\" class=\"rounded-circle\"> <span class=\"mx-2 text-secondary-emphasis\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		var templ_7745c5c3_Var4 string
+		templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(name)
+		if templ_7745c5c3_Err != nil {
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/partials/sideBar.templ`, Line: 43, Col: 57}
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</span> <i class=\"bi bi-three-dots\" data-bs-toggle=\"dropdown\" aria-expanded=\"false\"></i><ul class=\"dropdown-menu\" aria-labelledby=\"dropdownUser1\"><li><a class=\"dropdown-item\" href=\"/settings/account\">Settings</a></li><li><hr class=\"dropdown-divider\"></li><li><a class=\"dropdown-item\" href=\"#\">Sign out</a></li></ul></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

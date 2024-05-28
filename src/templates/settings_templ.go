@@ -11,10 +11,11 @@ import "io"
 import "bytes"
 
 import (
+	"github.com/Ryan-Har/site-monitor/src/models"
 	"github.com/Ryan-Har/site-monitor/src/templates/partials"
 )
 
-func Settings(settingsNavBar templ.Component, settingsContent templ.Component) templ.Component {
+func Settings(settingsNavBar templ.Component, settingsContent templ.Component, userInfo models.UserInfo) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
 		if !templ_7745c5c3_IsBuffer {
@@ -31,7 +32,7 @@ func Settings(settingsNavBar templ.Component, settingsContent templ.Component) t
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = partials.SideBar().Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = partials.SideBar(userInfo).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -52,6 +53,10 @@ func Settings(settingsNavBar templ.Component, settingsContent templ.Component) t
 			return templ_7745c5c3_Err
 		}
 		templ_7745c5c3_Err = EnableTooltip().Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = partials.RenewAuthToken().Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

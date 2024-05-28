@@ -57,6 +57,8 @@ templ SignupFunction() {
             displayName: name
         })
         console.log('User signed up: ', user);
+        refreshAndVerifyToken()
+        window.location.href = '/monitors';
       })
       .catch((error) => {
         var errorCode = error.code;
@@ -78,6 +80,8 @@ templ LoginFunction() {
         // Logged in successfully
         var user = userCredential.user;
         console.log('User logged in: ', user);
+        refreshAndVerifyToken()
+        window.location.href = '/monitors';
       })
       .catch((error) => {
         var errorCode = error.code;
@@ -85,5 +89,73 @@ templ LoginFunction() {
         console.error('Error: ', errorCode, errorMessage);
       });
   }
+  </script>
+}
+
+templ RefreshAndVerifyTokenFunction() {
+  <script>
+  function refreshAndVerifyToken() {
+    firebase.auth().currentUser.getIdToken(true) // Force refresh
+  .then((idToken) => {
+    verifyToken(idToken);
+  })
+  .catch((error) => {
+      var errorCode = error.code;
+      var errorMessage = error.message;
+      console.error('Error: ', errorCode, errorMessage);
+  });
+  } 
+  </script>
+}
+
+templ VerifyTokenFunction() {
+  <script>
+  function verifyToken(idToken) {
+    fetch('/verifylogin', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': idToken
+        },
+        body: JSON.stringify({ idToken: idToken })
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log('Success:', data);
+    })
+    .catch((error) => {
+        console.error('Error:', error);
+    });
+  }
+  </script>
+}
+
+templ RenewAuthToken() {
+  @ImportFirebaseScripts()
+  @InitializeFirebaseApp()
+  <script>
+  firebase.auth().currentUser.getIdToken(true) // Force refresh
+  .then(function(idToken) {
+    // Send token to your backend using an HTTPS request
+    fetch('/updateauthcookie', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': idToken
+        },
+        body: JSON.stringify({ idToken: idToken })
+    })
+    .catch((error) => {
+        console.error('Error:', error);
+    });
+  })
+  .catch((error) => {
+        console.error('Error:', error);
+  });
   </script>
 }

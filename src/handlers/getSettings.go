@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"github.com/Ryan-Har/site-monitor/src/templates"
 	"github.com/Ryan-Har/site-monitor/src/templates/partials"
 	"net/http"
@@ -27,8 +28,13 @@ func NewGetSecuritySettingsHandler() *GetSecuritySettingsHandler {
 func (h *GetAccountSettingsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	nav := partials.SettingsNavBar("account")
 	acc := templates.SettingsAccount("Ryan Harris")
-	c := templates.Settings(nav, acc)
-	err := templates.Layout("Settings", c).Render(r.Context(), w)
+	userInfo, err := GetUserInfoFromContext(r.Context())
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	c := templates.Settings(nav, acc, userInfo)
+	err = templates.Layout("Settings", c).Render(r.Context(), w)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -38,8 +44,13 @@ func (h *GetAccountSettingsHandler) ServeHTTP(w http.ResponseWriter, r *http.Req
 func (h *GetNotificationSettingsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	nav := partials.SettingsNavBar("notifications")
 	not := templates.SettingsNotifications()
-	c := templates.Settings(nav, not)
-	err := templates.Layout("Settings", c).Render(r.Context(), w)
+	userInfo, err := GetUserInfoFromContext(r.Context())
+	if err != nil {
+		fmt.Println(err)
+	}
+	c := templates.Settings(nav, not, userInfo)
+
+	err = templates.Layout("Settings", c).Render(r.Context(), w)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -49,8 +60,13 @@ func (h *GetNotificationSettingsHandler) ServeHTTP(w http.ResponseWriter, r *htt
 func (h *GetSecuritySettingsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	nav := partials.SettingsNavBar("security")
 	sec := templates.SettingsSecurity()
-	c := templates.Settings(nav, sec)
-	err := templates.Layout("Settings", c).Render(r.Context(), w)
+	userInfo, err := GetUserInfoFromContext(r.Context())
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	c := templates.Settings(nav, sec, userInfo)
+	err = templates.Layout("Settings", c).Render(r.Context(), w)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

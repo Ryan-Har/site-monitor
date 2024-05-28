@@ -120,7 +120,7 @@ func SignupFunction() templ.Component {
 			templ_7745c5c3_Var4 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<script>\n    function signUp() {\n    var name = document.getElementById('signup-name').value;\n    var email = document.getElementById('signup-email').value;\n    var password = document.getElementById('signup-password').value;\n\n    firebase.auth().createUserWithEmailAndPassword(email, password)\n      .then((userCredential) => {\n        // Signed up successfully\n        var user = userCredential.user;\n        user.updateProfile({\n            displayName: name\n        })\n        console.log('User signed up: ', user);\n      })\n      .catch((error) => {\n        var errorCode = error.code;\n        var errorMessage = error.message;\n        console.error('Error: ', errorCode, errorMessage);\n      });\n  }\n  </script>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<script>\n    function signUp() {\n    var name = document.getElementById('signup-name').value;\n    var email = document.getElementById('signup-email').value;\n    var password = document.getElementById('signup-password').value;\n\n    firebase.auth().createUserWithEmailAndPassword(email, password)\n      .then((userCredential) => {\n        // Signed up successfully\n        var user = userCredential.user;\n        user.updateProfile({\n            displayName: name\n        })\n        console.log('User signed up: ', user);\n        refreshAndVerifyToken()\n        window.location.href = '/monitors';\n      })\n      .catch((error) => {\n        var errorCode = error.code;\n        var errorMessage = error.message;\n        console.error('Error: ', errorCode, errorMessage);\n      });\n  }\n  </script>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -144,7 +144,87 @@ func LoginFunction() templ.Component {
 			templ_7745c5c3_Var5 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<script>\n    function login() {\n    var email = document.getElementById('login-email').value;\n    var password = document.getElementById('login-password').value;\n\n    firebase.auth().signInWithEmailAndPassword(email, password)\n      .then((userCredential) => {\n        // Logged in successfully\n        var user = userCredential.user;\n        console.log('User logged in: ', user);\n      })\n      .catch((error) => {\n        var errorCode = error.code;\n        var errorMessage = error.message;\n        console.error('Error: ', errorCode, errorMessage);\n      });\n  }\n  </script>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<script>\n    function login() {\n    var email = document.getElementById('login-email').value;\n    var password = document.getElementById('login-password').value;\n\n    firebase.auth().signInWithEmailAndPassword(email, password)\n      .then((userCredential) => {\n        // Logged in successfully\n        var user = userCredential.user;\n        console.log('User logged in: ', user);\n        refreshAndVerifyToken()\n        window.location.href = '/monitors';\n      })\n      .catch((error) => {\n        var errorCode = error.code;\n        var errorMessage = error.message;\n        console.error('Error: ', errorCode, errorMessage);\n      });\n  }\n  </script>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		if !templ_7745c5c3_IsBuffer {
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteTo(templ_7745c5c3_W)
+		}
+		return templ_7745c5c3_Err
+	})
+}
+
+func RefreshAndVerifyTokenFunction() templ.Component {
+	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
+		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
+		if !templ_7745c5c3_IsBuffer {
+			templ_7745c5c3_Buffer = templ.GetBuffer()
+			defer templ.ReleaseBuffer(templ_7745c5c3_Buffer)
+		}
+		ctx = templ.InitializeContext(ctx)
+		templ_7745c5c3_Var6 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var6 == nil {
+			templ_7745c5c3_Var6 = templ.NopComponent
+		}
+		ctx = templ.ClearChildren(ctx)
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<script>\n  function refreshAndVerifyToken() {\n    firebase.auth().currentUser.getIdToken(true) // Force refresh\n  .then((idToken) => {\n    verifyToken(idToken);\n  })\n  .catch((error) => {\n      var errorCode = error.code;\n      var errorMessage = error.message;\n      console.error('Error: ', errorCode, errorMessage);\n  });\n  } \n  </script>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		if !templ_7745c5c3_IsBuffer {
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteTo(templ_7745c5c3_W)
+		}
+		return templ_7745c5c3_Err
+	})
+}
+
+func VerifyTokenFunction() templ.Component {
+	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
+		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
+		if !templ_7745c5c3_IsBuffer {
+			templ_7745c5c3_Buffer = templ.GetBuffer()
+			defer templ.ReleaseBuffer(templ_7745c5c3_Buffer)
+		}
+		ctx = templ.InitializeContext(ctx)
+		templ_7745c5c3_Var7 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var7 == nil {
+			templ_7745c5c3_Var7 = templ.NopComponent
+		}
+		ctx = templ.ClearChildren(ctx)
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<script>\n  function verifyToken(idToken) {\n    fetch('/verifylogin', {\n        method: 'POST',\n        headers: {\n            'Content-Type': 'application/json',\n            'Authorization': idToken\n        },\n        body: JSON.stringify({ idToken: idToken })\n    })\n    .then(response => {\n        if (!response.ok) {\n            throw new Error('Network response was not ok');\n        }\n        return response.json();\n    })\n    .then(data => {\n        console.log('Success:', data);\n    })\n    .catch((error) => {\n        console.error('Error:', error);\n    });\n  }\n  </script>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		if !templ_7745c5c3_IsBuffer {
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteTo(templ_7745c5c3_W)
+		}
+		return templ_7745c5c3_Err
+	})
+}
+
+func RenewAuthToken() templ.Component {
+	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
+		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
+		if !templ_7745c5c3_IsBuffer {
+			templ_7745c5c3_Buffer = templ.GetBuffer()
+			defer templ.ReleaseBuffer(templ_7745c5c3_Buffer)
+		}
+		ctx = templ.InitializeContext(ctx)
+		templ_7745c5c3_Var8 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var8 == nil {
+			templ_7745c5c3_Var8 = templ.NopComponent
+		}
+		ctx = templ.ClearChildren(ctx)
+		templ_7745c5c3_Err = ImportFirebaseScripts().Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = InitializeFirebaseApp().Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<script>\n  firebase.auth().currentUser.getIdToken(true) // Force refresh\n  .then(function(idToken) {\n    // Send token to your backend using an HTTPS request\n    fetch('/updateauthcookie', {\n        method: 'POST',\n        headers: {\n            'Content-Type': 'application/json',\n            'Authorization': idToken\n        },\n        body: JSON.stringify({ idToken: idToken })\n    })\n    .catch((error) => {\n        console.error('Error:', error);\n    });\n  })\n  .catch((error) => {\n        console.error('Error:', error);\n  });\n  </script>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

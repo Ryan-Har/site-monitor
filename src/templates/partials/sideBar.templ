@@ -1,14 +1,19 @@
 package partials
 
-templ SideBar() {
+import(
+    "github.com/Ryan-Har/site-monitor/src/models"
+)
+
+templ SideBar(userInfo models.UserInfo) {
     <div class="col-2 col-sm-3 col-xl-2 px-sm-1 px-0 bg-dark-subtle">
         <div class="d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 min-vh-100">
             @sideBarNavInfo()
             <hr></hr>
-            @sideBarUserSection()
+            @sideBarUserSection(userInfo.Name)
         </div>
     </div>
 }
+
 
 templ sideBarNavInfo() {
     <a href="/" class="d-flex align-items-center pb-3 mb-md-0 me-md-auto text-decoration-none">
@@ -32,10 +37,10 @@ templ sideBarNavInfo() {
     </ul>
 }
 
-templ sideBarUserSection() {
+templ sideBarUserSection(name string) {
     <div class="dropdown pb-4 text-decoration-none align-items-center justify-content-center">
         <img src="https://github.com/mdo.png" alt="hugenerd" width="40" height="40" class="rounded-circle"></img>
-        <span class="mx-2 text-secondary-emphasis">loser</span>
+        <span class="mx-2 text-secondary-emphasis">{ name }</span>
         <i class="bi bi-three-dots" data-bs-toggle="dropdown" aria-expanded="false"></i>
         <ul class="dropdown-menu" aria-labelledby="dropdownUser1">
             <li>

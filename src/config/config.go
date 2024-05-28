@@ -8,6 +8,7 @@ import (
 
 type Config struct {
 	FirebaseConfig `json:"firebaseConfig"`
+	FirebaseSDKServiceAccount
 }
 
 type FirebaseConfig struct {
@@ -20,6 +21,10 @@ type FirebaseConfig struct {
 	FIREBASE_MEASUREMENT_ID      string `json:"measurementId"`
 }
 
+type FirebaseSDKServiceAccount struct {
+	FIREBASE_SERVICE_ACCOUNT_LOCATION string //location of the sdk service account.json file
+}
+
 func GetConfig() *Config {
 	rtn := Config{}
 	rtn.FIREBASE_API_KEY = os.Getenv("FIREBASE_API_KEY")
@@ -29,6 +34,7 @@ func GetConfig() *Config {
 	rtn.FIREBASE_MESSAGING_SENDER_ID = os.Getenv("FIREBASE_MESSAGING_SENDER_ID")
 	rtn.FIREBASE_APP_ID = os.Getenv("FIREBASE_APP_ID")
 	rtn.FIREBASE_MEASUREMENT_ID = os.Getenv("FIREBASE_MEASUREMENT_ID")
+	rtn.FIREBASE_SERVICE_ACCOUNT_LOCATION = os.Getenv("FIREBASE_SERVICE_ACCOUNT_LOCATION")
 	return &rtn
 }
 

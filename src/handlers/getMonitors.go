@@ -28,9 +28,13 @@ func NewGetMonitorByID() *GetMonitorByID {
 
 func (h *GetMonitorOverviewHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	mCards := partials.MultipleMonitors()
-	c := templates.MonitorOverview(mCards)
+	userInfo, err := GetUserInfoFromContext(r.Context())
+	if err != nil {
+		fmt.Println(err)
+	}
+	c := templates.MonitorOverview(mCards, userInfo)
 
-	err := templates.Layout("Monitors", c).Render(r.Context(), w)
+	err = templates.Layout("Monitors", c).Render(r.Context(), w)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -38,9 +42,13 @@ func (h *GetMonitorOverviewHandler) ServeHTTP(w http.ResponseWriter, r *http.Req
 }
 
 func (h *GetMonitorFormHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	c := templates.NewMonitorForm()
+	userInfo, err := GetUserInfoFromContext(r.Context())
+	if err != nil {
+		fmt.Println(err)
+	}
+	c := templates.NewMonitorForm(userInfo)
 
-	err := templates.Layout("Monitors", c).Render(r.Context(), w)
+	err = templates.Layout("Monitors", c).Render(r.Context(), w)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
