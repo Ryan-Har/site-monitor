@@ -1,7 +1,7 @@
 package templates
 
 import (
-  "github.com/Ryan-Har/site-monitor/src/templates/partials"
+  //"github.com/Ryan-Har/site-monitor/src/templates/partials"
 )
 
 templ Login() {
@@ -14,10 +14,10 @@ templ Login() {
       <p class="fs-8 text-secondary mb-12">Welcome back!</p>
       <form onsubmit="login(); return false;">
         <div class="mb-2">
-          <input class="form-control" id="login-email" type="email" placeholder="Email address"></input>
+          <input class="form-control" id="email" type="email" placeholder="Email address"></input>
         </div>
         <div class="mb-2 position-relative">
-          <input class="form-control" id="login-password" type="password" placeholder="Password"></input>
+          <input class="form-control" id="password" type="password" placeholder="Password"></input>
           <a class="position-absolute top-50 end-0 me-4 translate-middle-y btn p-0 btn-link fs-9" href="#">Forgot Password?</a>
         </div>
         <button class="btn w-100 mb-8 btn-primary shadow" type="submit">Sign In</button>
@@ -28,10 +28,5 @@ templ Login() {
       </form>
     </div>
   </div>
-  @partials.ImportFirebaseScripts()
-  @partials.FirebaseConfig()
-  @partials.InitializeFirebaseApp()
-  @partials.LoginFunction()
-  @partials.RefreshAndVerifyTokenFunction()
-  @partials.VerifyTokenFunction()
+
 }

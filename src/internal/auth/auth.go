@@ -68,7 +68,7 @@ func (s *Server) VerifyLogin(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) UpdateAuthCookie(w http.ResponseWriter, r *http.Request) {
 	idToken := r.Header.Get("Authorization")
-
+	fmt.Println("cookie updated")
 	s.setAuthCookie(w, idToken)
 	w.Write([]byte(`{"Response": "Token Valid"}`))
 }

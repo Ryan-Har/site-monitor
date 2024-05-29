@@ -11,7 +11,7 @@ import "io"
 import "bytes"
 
 import (
-	"github.com/Ryan-Har/site-monitor/src/templates/partials"
+//"github.com/Ryan-Har/site-monitor/src/templates/partials"
 )
 
 func Login() templ.Component {
@@ -27,31 +27,7 @@ func Login() templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"container d-flex flex-column align-items-center justify-content-center h-50 w-50 mt-5\"><div class=\"mw-md mx-auto text-center\"><a class=\"d-inline-block mb-32\" href=\"#\"><img src=\"flaro-assets/logos/flaro-logo-black-xl.svg\" alt=\"\"></a><h3 class=\"mb-4\">Sign In</h3><p class=\"fs-8 text-secondary mb-12\">Welcome back!</p><form onsubmit=\"login(); return false;\"><div class=\"mb-2\"><input class=\"form-control\" id=\"login-email\" type=\"email\" placeholder=\"Email address\"></div><div class=\"mb-2 position-relative\"><input class=\"form-control\" id=\"login-password\" type=\"password\" placeholder=\"Password\"> <a class=\"position-absolute top-50 end-0 me-4 translate-middle-y btn p-0 btn-link fs-9\" href=\"#\">Forgot Password?</a></div><button class=\"btn w-100 mb-8 btn-primary shadow\" type=\"submit\">Sign In</button><p class=\"d-flex flex-wrap align-items-center justify-content-center\"><span class=\"me-1\">Don’t have an account?</span> <a class=\"btn px-0 btn-link fw-bold\" href=\"/signup\">Create free account</a></p></form></div></div>")
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = partials.ImportFirebaseScripts().Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = partials.FirebaseConfig().Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = partials.InitializeFirebaseApp().Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = partials.LoginFunction().Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = partials.RefreshAndVerifyTokenFunction().Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
-		}
-		templ_7745c5c3_Err = partials.VerifyTokenFunction().Render(ctx, templ_7745c5c3_Buffer)
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"container d-flex flex-column align-items-center justify-content-center h-50 w-50 mt-5\"><div class=\"mw-md mx-auto text-center\"><a class=\"d-inline-block mb-32\" href=\"#\"><img src=\"flaro-assets/logos/flaro-logo-black-xl.svg\" alt=\"\"></a><h3 class=\"mb-4\">Sign In</h3><p class=\"fs-8 text-secondary mb-12\">Welcome back!</p><form onsubmit=\"login(); return false;\"><div class=\"mb-2\"><input class=\"form-control\" id=\"email\" type=\"email\" placeholder=\"Email address\"></div><div class=\"mb-2 position-relative\"><input class=\"form-control\" id=\"password\" type=\"password\" placeholder=\"Password\"> <a class=\"position-absolute top-50 end-0 me-4 translate-middle-y btn p-0 btn-link fs-9\" href=\"#\">Forgot Password?</a></div><button class=\"btn w-100 mb-8 btn-primary shadow\" type=\"submit\">Sign In</button><p class=\"d-flex flex-wrap align-items-center justify-content-center\"><span class=\"me-1\">Don’t have an account?</span> <a class=\"btn px-0 btn-link fw-bold\" href=\"/signup\">Create free account</a></p></form></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

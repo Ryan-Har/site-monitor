@@ -1,8 +1,5 @@
 package templates
 
-import (
-  "github.com/Ryan-Har/site-monitor/src/templates/partials"
-)
 
 templ Signup() {
     <div class="container d-flex flex-column align-items-center justify-content-center h-50 w-50 mt-5">
@@ -14,13 +11,13 @@ templ Signup() {
       <p class="fs-8 text-secondary mb-12">Create an account to start monitoring your sites.</p>
       <form onsubmit="signUp(); return false;">
         <div class="mb-2">
-          <input class="form-control" id="signup-name" type="text" placeholder="Name"></input>
+          <input class="form-control" id="name" type="text" placeholder="Name"></input>
         </div>
         <div class="mb-2">
-          <input class="form-control" id="signup-email" type="email" placeholder="Email address"></input>
+          <input class="form-control" id="email" type="email" placeholder="Email address"></input>
         </div>
         <div class="mb-2">
-          <input class="form-control" id="signup-password" type="password" placeholder="Create Password"></input>
+          <input class="form-control" id="password" type="password" placeholder="Create Password"></input>
         </div>
         <button class="btn w-100 mb-8 btn-primary shadow" type="submit">Create Account</button>
         <p class="d-flex flex-wrap align-items-center justify-content-center">
@@ -30,10 +27,5 @@ templ Signup() {
       </form>
     </div>
   </div>
-  @partials.ImportFirebaseScripts()
-  @partials.FirebaseConfig()
-  @partials.InitializeFirebaseApp()
-  @partials.SignupFunction()
-  @partials.RefreshAndVerifyTokenFunction()
-  @partials.VerifyTokenFunction()
+  
 }

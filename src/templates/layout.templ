@@ -1,5 +1,8 @@
 package templates
 
+import (
+  "github.com/Ryan-Har/site-monitor/src/templates/partials"
+)
 
 templ HeadStandard(title string) {
     <head>
@@ -31,6 +34,7 @@ templ Layout(title string, contents templ.Component) {
     <html>
         @HeadStandard(title)
         @ScriptsStandard()
+        @partials.MonitorAuthState()
         @contents
     </html>
 }
