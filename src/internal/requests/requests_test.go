@@ -78,7 +78,7 @@ func TestSendRequest(t *testing.T) {
 				Timeout: 5 * time.Second,
 			},
 		}
-		resp := Send(reqs)
+		resp := Send(reqs...)
 		for _, item := range resp {
 			if item.ID != 4 {
 				if item.Err != nil {
@@ -132,7 +132,7 @@ func TestSendRequest(t *testing.T) {
 			},
 		}
 
-		resp := Send(req)
+		resp := Send(req...)
 		respMap := make(map[int]*Response)
 		for _, r := range resp {
 			respMap[r.ID] = &r

@@ -116,14 +116,14 @@ func getTooltipMessage(intervalInSeconds int) string {
     return "Refresh happens every " + intervalSecondsToHumanReadable(intervalInSeconds) + "."
 }
 
-templ monitorFormTitle() {
+templ addMonitorFormTitle() {
     <div class="row my-2 mx-3">
         <h4> Add Monitor </h4>
     </div>
 }
 
-templ MonitorForm() {
-    @monitorFormTitle()
+templ AddMonitorForm() {
+    @addMonitorFormTitle()
     <div class="row my-2 mx-3">
         <div class="card bg-dark-subtle">
             <div class="card-body">

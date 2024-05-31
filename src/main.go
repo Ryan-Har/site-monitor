@@ -4,11 +4,16 @@ import (
 	"fmt"
 	"github.com/Ryan-Har/site-monitor/src/handlers"
 	"github.com/Ryan-Har/site-monitor/src/internal/auth"
+	database "github.com/Ryan-Har/site-monitor/src/internal/database"
 	"net/http"
 )
 
 func main() {
 	fb := auth.NewServer()
+	_, err := database.NewSQLiteHandler()
+	if err != nil {
+		fmt.Println("unable to initialise database", err)
+	}
 
 	http.Handle("/assets/", http.StripPrefix("/assets/", http.FileServer(http.Dir("assets"))))
 

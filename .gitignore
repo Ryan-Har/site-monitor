@@ -8,3 +8,4 @@ Thumbs.db
 dev/
 .env
 site-monitor-hit-firebase-adminsdk-yhqqa-e10568941d.json
+*.db

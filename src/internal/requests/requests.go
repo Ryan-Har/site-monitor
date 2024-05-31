@@ -11,7 +11,10 @@ import (
 	"time"
 )
 
-//this package is to be used with a slice of Requests, create a slice of Requests and Send()
+//this package is to be used with a slice of Requests,
+//create a slice of Requests and Send(slice...)
+//pro-bing ping needs system permissions for raw sockets, this can be added with the below:
+//sudo sysctl -w net.ipv4.ping_group_range="0   2147483647"
 
 type Requests struct {
 	URL     string
@@ -61,7 +64,7 @@ type makeRequestResponse struct {
 	CheckResponse
 }
 
-func Send(req []Requests) []Response {
+func Send(req ...Requests) []Response {
 	organised := organiseMonitorRequests(req)
 
 	respChan := make(chan makeRequestResponseWithErr, len(organised))
