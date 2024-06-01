@@ -59,7 +59,7 @@ func TestSQLiteFunctions(t *testing.T) {
 
 	t.Run("Add Single Monitor", func(t *testing.T) {
 		m := getSampleMonitors(1)[0]
-		err := h.AddMonitor(m)
+		err := h.AddMonitors(m)
 		if err != nil {
 			t.Errorf("error adding monitor, %v", err.Error())
 		}
@@ -67,12 +67,9 @@ func TestSQLiteFunctions(t *testing.T) {
 
 	t.Run("Get Single Monitor", func(t *testing.T) {
 		m := getSampleMonitors(1)[0]
+		monitorIds := []int{m.MonitorID}
 
-		if _, err := h.GetMonitorByID(); err == nil {
-			t.Errorf("GetMonitorByID should have responded with error for no arguments, error was nil")
-		}
-
-		mon, err := h.GetMonitorByID(1)
+		mon, err := h.GetMonitors(ByMonitorIds{monitorIds})
 		if err != nil {
 			t.Errorf("Get Single monitor failed, no results: %v", err.Error())
 		}
@@ -83,11 +80,13 @@ func TestSQLiteFunctions(t *testing.T) {
 	})
 
 	t.Run("Delete Single Monitor", func(t *testing.T) {
-		if err := h.DeleteMonitorByID(); err == nil {
+		m := getSampleMonitors(1)[0]
+		monitorIds := []int{m.MonitorID}
+		if err := h.DeleteMonitors(); err == nil {
 			t.Errorf("Delete Monitor should have responded with error for no arguments, error was nil")
 		}
 
-		if err := h.DeleteMonitorByID(1); err != nil {
+		if err := h.DeleteMonitors(ByMonitorIds{monitorIds}); err != nil {
 			t.Errorf("Delete Monitor failed: %v", err.Error())
 		}
 	})

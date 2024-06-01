@@ -12,6 +12,9 @@ import (
 )
 
 type DBHandler interface {
+	AddMonitors(monitor ...Monitor) error
+	GetMonitors(filters ...MonitorFilter) ([]Monitor, error)
+	DeleteMonitors(filters ...MonitorFilter) error
 }
 
 type SQLiteHandler struct {
@@ -34,7 +37,7 @@ func NewSQLiteHandler() (*DBHandler, error) {
 		}
 
 	}
-	dbHandler = SQLiteHandler{
+	dbHandler = &SQLiteHandler{
 		DB:         db,
 		Version:    1,
 		writeMutex: &sync.Mutex{},
@@ -91,7 +94,7 @@ type Monitor struct {
 	Port         int
 }
 
-func (h *SQLiteHandler) AddMonitor(monitor ...Monitor) error {
+func (h *SQLiteHandler) AddMonitors(monitor ...Monitor) error {
 	stmt, err := h.DB.Prepare("INSERT INTO Monitors (UUID, Url, Type, Interval_in_seconds, Timeout_In_Seconds, Port) VALUES (?, ?, ?, ?, ?, ?)")
 	if err != nil {
 		return err
@@ -110,60 +113,88 @@ func (h *SQLiteHandler) AddMonitor(monitor ...Monitor) error {
 	return nil
 }
 
-func (h *SQLiteHandler) GetMonitorByID(ids ...int) ([]Monitor, error) {
-	if len(ids) == 0 {
-		return nil, fmt.Errorf("no id provided, nothing to get")
+// Filter defines the interface for filter functions
+type MonitorFilter interface {
+	ToSQLite(monitorTable string) (string, []interface{})
+}
+
+// ByMonitorIds implements Filter for filtering by monitorIds
+type ByMonitorIds struct {
+	ids []int
+}
+
+// Apply implements Filter interface for ByMonitorIds
+func (f ByMonitorIds) ToSQLite(monitorTable string) (string, []interface{}) {
+	if len(f.ids) == 0 {
+		return "", nil
+	}
+	placeholders := make([]interface{}, len(f.ids))
+	for i, id := range f.ids {
+		placeholders[i] = id
 	}
 
-	stmt, err := h.DB.Prepare("SELECT Monitor_id, UUID, Url, Type, Interval_in_seconds, Timeout_in_seconds, Port FROM Monitors WHERE Monitor_id in (?" + strings.Repeat(",?", len(ids)-1) + ")")
-	if err != nil {
-		return nil, err
+	return fmt.Sprintf(" %s.Monitor_id IN (%s) ", monitorTable, strings.Repeat("?", len(f.ids))), placeholders
+}
+
+func (h *SQLiteHandler) GetMonitors(filters ...MonitorFilter) ([]Monitor, error) {
+	sqlTable := "Monitors"
+	query := "SELECT Monitor_id, UUID, Url, Type, Interval_in_seconds, Timeout_in_seconds, Port FROM " + sqlTable
+
+	var whereClause []string
+	var args []interface{}
+	for _, filter := range filters {
+		condSql, condArgs := filter.ToSQLite(sqlTable)
+		if condSql != "" {
+			whereClause = append(whereClause, condSql)
+			args = append(args, condArgs...)
+		}
 	}
 
-	idsInterface := make([]interface{}, len(ids))
-	for i, id := range ids {
-		idsInterface[i] = id
+	if len(whereClause) > 0 {
+		query += " WHERE " + strings.Join(whereClause, " AND ")
 	}
 
-	rows, err := stmt.Query(idsInterface...)
+	rows, err := h.DB.Query(query, args...)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 
-	monitorsResult := []Monitor{}
-
+	var monitors []Monitor
 	for rows.Next() {
 		var m Monitor
-		if err := rows.Scan(&m.MonitorID, &m.UUID, &m.URL, &m.Type, &m.IntervalSecs, &m.TimeoutSecs, &m.Port); err != nil {
+		err := rows.Scan(&m.MonitorID, &m.UUID, &m.URL, &m.Type, &m.IntervalSecs, &m.TimeoutSecs, &m.Port)
+		if err != nil {
 			return nil, err
 		}
-		monitorsResult = append(monitorsResult, m)
+		monitors = append(monitors, m)
 	}
-
-	if err = rows.Err(); err != nil {
-		return nil, err
-	}
-
-	return monitorsResult, nil
+	return monitors, nil
 }
 
-func (h *SQLiteHandler) DeleteMonitorByID(ids ...int) error {
-	if len(ids) == 0 {
-		return fmt.Errorf("no id provided, nothing to delete")
+func (h *SQLiteHandler) DeleteMonitors(filters ...MonitorFilter) error {
+	if len(filters) == 0 {
+		return fmt.Errorf("filters must accompany delete monitors")
 	}
 
-	stms, err := h.DB.Prepare("DELETE FROM Monitors WHERE Monitor_id in (?" + strings.Repeat(",?", len(ids)-1) + ")")
-	if err != nil {
-		return err
+	sqlTable := "Monitors"
+	query := "DELETE FROM " + sqlTable
+
+	var whereClause []string
+	var args []interface{}
+	for _, filter := range filters {
+		condSql, condArgs := filter.ToSQLite(sqlTable)
+		if condSql != "" {
+			whereClause = append(whereClause, condSql)
+			args = append(args, condArgs...)
+		}
 	}
 
-	idsInterface := make([]interface{}, len(ids))
-	for i, id := range ids {
-		idsInterface[i] = id
+	if len(whereClause) > 0 {
+		query += " WHERE " + strings.Join(whereClause, " AND ")
 	}
 
-	_, err = stms.Exec(idsInterface...)
+	_, err := h.DB.Exec(query, args...)
 	if err != nil {
 		return err
 	}
