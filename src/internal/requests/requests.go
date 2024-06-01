@@ -13,7 +13,7 @@ import (
 
 //this package is to be used with a slice of Requests,
 //create a slice of Requests and Send(slice...)
-//pro-bing ping needs system permissions for raw sockets, this can be added with the below:
+//pro-bing ping needs system permissions for sockets
 //sudo sysctl -w net.ipv4.ping_group_range="0   2147483647"
 
 type Requests struct {
@@ -65,7 +65,7 @@ type makeRequestResponse struct {
 }
 
 func Send(req ...Requests) []Response {
-	organised := organiseMonitorRequests(req)
+	organised := organiseMonitorRequests(req...)
 
 	respChan := make(chan makeRequestResponseWithErr, len(organised))
 	var wg sync.WaitGroup
@@ -102,7 +102,7 @@ func Send(req ...Requests) []Response {
 	return sentSlice
 }
 
-func organiseMonitorRequests(reqs []Requests) []makeRequest {
+func organiseMonitorRequests(reqs ...Requests) []makeRequest {
 	var resp []makeRequest
 	for _, req := range reqs {
 		foundIndex, err := req.findMatch(resp)

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/Ryan-Har/site-monitor/src/handlers"
 	"github.com/Ryan-Har/site-monitor/src/internal/auth"
-	database "github.com/Ryan-Har/site-monitor/src/internal/database"
+	"github.com/Ryan-Har/site-monitor/src/internal/database"
 	"net/http"
 )
 
