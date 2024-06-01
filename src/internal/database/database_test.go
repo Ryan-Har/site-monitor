@@ -10,7 +10,10 @@ import (
 var testDBFile = "testdb.db"
 
 func setupTesting() (*SQLiteHandler, func()) {
-	db, _ := openSQLiteDB(testDBFile)
+	db, err := openSQLiteDB(testDBFile)
+	if err != nil {
+		panic("error opening db: " + err.Error())
+	}
 	sqlite := SQLiteHandler{
 		DB:         db,
 		Version:    1,
