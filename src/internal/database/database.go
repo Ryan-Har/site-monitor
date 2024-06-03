@@ -142,7 +142,7 @@ func (f ByMonitorIds) MonitorToSQLite(monitorTable string) (string, []interface{
 		placeholders[i] = id
 	}
 
-	return fmt.Sprintf(" %s.Monitor_id IN (%s) ", monitorTable, strings.Repeat("?", len(f.Ids))), placeholders
+	return fmt.Sprintf(" %s.Monitor_id IN (%s) ", monitorTable, generateQuestionMarks(len(f.Ids))), placeholders
 }
 
 type ByUUIDs struct {
@@ -158,7 +158,7 @@ func (f ByUUIDs) MonitorToSQLite(monitorTable string) (string, []interface{}) {
 		placeholders[i] = id
 	}
 
-	return fmt.Sprintf(" %s.UUID IN (%s) ", monitorTable, strings.Repeat("?", len(f.Ids))), placeholders
+	return fmt.Sprintf(" %s.UUID IN (%s) ", monitorTable, generateQuestionMarks(len(f.Ids))), placeholders
 }
 
 type ByUrls struct {
@@ -174,7 +174,7 @@ func (f ByUrls) MonitorToSQLite(monitorTable string) (string, []interface{}) {
 		placeholders[i] = id
 	}
 
-	return fmt.Sprintf(" %s.Url IN (%s) ", monitorTable, strings.Repeat("?", len(f.Urls))), placeholders
+	return fmt.Sprintf(" %s.Url IN (%s) ", monitorTable, generateQuestionMarks(len(f.Urls))), placeholders
 }
 
 type ByTypes struct {
@@ -190,7 +190,7 @@ func (f ByTypes) MonitorToSQLite(monitorTable string) (string, []interface{}) {
 		placeholders[i] = id
 	}
 
-	return fmt.Sprintf(" %s.Type IN (%s) ", monitorTable, strings.Repeat("?", len(f.Types))), placeholders
+	return fmt.Sprintf(" %s.Type IN (%s) ", monitorTable, generateQuestionMarks(len(f.Types))), placeholders
 }
 
 type ByIntervalSecs struct {
@@ -205,8 +205,9 @@ func (f ByIntervalSecs) MonitorToSQLite(monitorTable string) (string, []interfac
 	for i, id := range f.Intervals {
 		placeholders[i] = id
 	}
+	fmt.Println(placeholders...)
 
-	return fmt.Sprintf(" %s.Interval_in_seconds IN (%s) ", monitorTable, strings.Repeat("?", len(f.Intervals))), placeholders
+	return fmt.Sprintf(" %s.Interval_in_seconds IN (%s) ", monitorTable, generateQuestionMarks(len(f.Intervals))), placeholders
 }
 
 type ByTimeoutSecs struct {
@@ -222,7 +223,7 @@ func (f ByTimeoutSecs) MonitorToSQLite(monitorTable string) (string, []interface
 		placeholders[i] = id
 	}
 
-	return fmt.Sprintf(" %s.Timeout_in_seconds IN (%s) ", monitorTable, strings.Repeat("?", len(f.Timeouts))), placeholders
+	return fmt.Sprintf(" %s.Timeout_in_seconds IN (%s) ", monitorTable, generateQuestionMarks(len(f.Timeouts))), placeholders
 }
 
 type ByPorts struct {
@@ -238,7 +239,7 @@ func (f ByPorts) MonitorToSQLite(monitorTable string) (string, []interface{}) {
 		placeholders[i] = id
 	}
 
-	return fmt.Sprintf(" %s.Port IN (%s) ", monitorTable, strings.Repeat("?", len(f.Ports))), placeholders
+	return fmt.Sprintf(" %s.Port IN (%s) ", monitorTable, generateQuestionMarks(len(f.Ports))), placeholders
 }
 
 func (h *SQLiteHandler) GetMonitors(filters ...MonitorFilter) ([]Monitor, error) {
@@ -353,7 +354,7 @@ func (f ByCheckIds) ResultsToSQLite(monitorTable string) (string, []interface{})
 		placeholders[i] = id
 	}
 
-	return fmt.Sprintf(" %s.Check_id IN (%s) ", monitorTable, strings.Repeat("?", len(f.Ids))), placeholders
+	return fmt.Sprintf(" %s.Check_id IN (%s) ", monitorTable, generateQuestionMarks(len(f.Ids))), placeholders
 }
 
 func (f ByMonitorIds) ResultsToSQLite(monitorTable string) (string, []interface{}) {
@@ -365,7 +366,7 @@ func (f ByMonitorIds) ResultsToSQLite(monitorTable string) (string, []interface{
 		placeholders[i] = id
 	}
 
-	return fmt.Sprintf(" %s.Monitor_id in (%s) ", monitorTable, strings.Repeat("?", len(f.Ids))), placeholders
+	return fmt.Sprintf(" %s.Monitor_id in (%s) ", monitorTable, generateQuestionMarks(len(f.Ids))), placeholders
 }
 
 type ByIsUp struct {
@@ -381,7 +382,7 @@ func (f ByIsUp) ResultsToSQLite(monitorTable string) (string, []interface{}) {
 		placeholder[0] = 0
 	}
 
-	return fmt.Sprintf(" %s.Is_up = %s ", monitorTable, strings.Repeat("?", 1)), placeholder
+	return fmt.Sprintf(" %s.Is_up = ? ", monitorTable), placeholder
 }
 
 func (h *SQLiteHandler) GetMonitorResults(filters ...MonitorResultsFilter) ([]MonitorResult, error) {
@@ -450,4 +451,17 @@ func (h *SQLiteHandler) DeleteMonitorResults(filters ...MonitorResultsFilter) er
 	}
 
 	return nil
+}
+
+func generateQuestionMarks(n int) string {
+	if n <= 0 {
+		return ""
+	}
+
+	questionMarks := make([]string, n)
+	for i := 0; i < n; i++ {
+		questionMarks[i] = "?"
+	}
+
+	return strings.Join(questionMarks, ",")
 }

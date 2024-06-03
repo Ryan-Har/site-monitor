@@ -93,7 +93,7 @@ func TestSQLiteFunctions(t *testing.T) {
 			t.Errorf("Get Single monitor by id filter failed, no results: %v", err.Error())
 		}
 
-		if len(mon) > 0 && mon[0] != m {
+		if len(mon) != 1 && mon[0] != m {
 			t.Errorf("Monitor results not accurate")
 		}
 
@@ -102,7 +102,7 @@ func TestSQLiteFunctions(t *testing.T) {
 			t.Errorf("Get Single monitor by UUID filter failed, no results: %v", err.Error())
 		}
 
-		if len(mon) > 0 && mon[0] != m {
+		if len(mon) != 1 && mon[0] != m {
 			t.Errorf("Monitor results not accurate")
 		}
 
@@ -111,7 +111,7 @@ func TestSQLiteFunctions(t *testing.T) {
 			t.Errorf("Get Single monitor by URL filter failed, no results: %v", err.Error())
 		}
 
-		if len(mon) > 0 && mon[0] != m {
+		if len(mon) != 1 && mon[0] != m {
 			t.Errorf("Monitor results not accurate")
 		}
 
@@ -120,7 +120,7 @@ func TestSQLiteFunctions(t *testing.T) {
 			t.Errorf("Get Single monitor by Type filter failed, no results: %v", err.Error())
 		}
 
-		if len(mon) > 0 && mon[0] != m {
+		if len(mon) != 1 && mon[0] != m {
 			t.Errorf("Monitor results not accurate")
 		}
 
@@ -129,7 +129,7 @@ func TestSQLiteFunctions(t *testing.T) {
 			t.Errorf("Get Single monitor by IntervalSecs filter failed, no results: %v", err.Error())
 		}
 
-		if len(mon) > 0 && mon[0] != m {
+		if len(mon) != 1 && mon[0] != m {
 			t.Errorf("Monitor results not accurate")
 		}
 
@@ -138,7 +138,7 @@ func TestSQLiteFunctions(t *testing.T) {
 			t.Errorf("Get Single monitor by TimeoutSecs filter failed, no results: %v", err.Error())
 		}
 
-		if len(mon) > 0 && mon[0] != m {
+		if len(mon) != 1 && mon[0] != m {
 			t.Errorf("Monitor results not accurate")
 		}
 
@@ -147,7 +147,16 @@ func TestSQLiteFunctions(t *testing.T) {
 			t.Errorf("Get Single monitor by Port filter failed, no results: %v", err.Error())
 		}
 
-		if len(mon) > 0 && mon[0] != m {
+		if len(mon) != 1 && mon[0] != m {
+			t.Errorf("Monitor results not accurate")
+		}
+
+		mon, err = h.GetMonitors(ByIntervalSecs{[]int{m.IntervalSecs, 120}})
+		if err != nil {
+			t.Errorf("Get Single monitor by multiple IntervalSecs filter failed, no results: %v", err.Error())
+		}
+
+		if len(mon) != 1 && mon[0] != m {
 			t.Errorf("Monitor results not accurate")
 		}
 	})
