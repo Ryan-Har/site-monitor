@@ -5,15 +5,17 @@ import (
 	"github.com/Ryan-Har/site-monitor/src/handlers"
 	"github.com/Ryan-Har/site-monitor/src/internal/auth"
 	"github.com/Ryan-Har/site-monitor/src/internal/database"
+	"github.com/Ryan-Har/site-monitor/src/internal/scheduler"
 	"net/http"
 )
 
 func main() {
 	fb := auth.NewServer()
-	_, err := database.NewSQLiteHandler()
+	dbh, err := database.NewSQLiteHandler()
 	if err != nil {
 		fmt.Println("unable to initialise database", err)
 	}
+	go scheduler.StartSchedulers(*dbh)
 
 	http.Handle("/assets/", http.StripPrefix("/assets/", http.FileServer(http.Dir("assets"))))
 
