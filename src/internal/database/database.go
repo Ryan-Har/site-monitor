@@ -129,116 +129,116 @@ type MonitorFilter interface {
 
 // ByMonitorIds implements Filter for filtering by monitorIds
 type ByMonitorIds struct {
-	ids []int
+	Ids []int
 }
 
 // Apply implements Filter interface for ByMonitorIds
 func (f ByMonitorIds) MonitorToSQLite(monitorTable string) (string, []interface{}) {
-	if len(f.ids) == 0 {
+	if len(f.Ids) == 0 {
 		return "", nil
 	}
-	placeholders := make([]interface{}, len(f.ids))
-	for i, id := range f.ids {
+	placeholders := make([]interface{}, len(f.Ids))
+	for i, id := range f.Ids {
 		placeholders[i] = id
 	}
 
-	return fmt.Sprintf(" %s.Monitor_id IN (%s) ", monitorTable, strings.Repeat("?", len(f.ids))), placeholders
+	return fmt.Sprintf(" %s.Monitor_id IN (%s) ", monitorTable, strings.Repeat("?", len(f.Ids))), placeholders
 }
 
 type ByUUIDs struct {
-	ids []string
+	Ids []string
 }
 
 func (f ByUUIDs) MonitorToSQLite(monitorTable string) (string, []interface{}) {
-	if len(f.ids) == 0 {
+	if len(f.Ids) == 0 {
 		return "", nil
 	}
-	placeholders := make([]interface{}, len(f.ids))
-	for i, id := range f.ids {
+	placeholders := make([]interface{}, len(f.Ids))
+	for i, id := range f.Ids {
 		placeholders[i] = id
 	}
 
-	return fmt.Sprintf(" %s.UUID IN (%s) ", monitorTable, strings.Repeat("?", len(f.ids))), placeholders
+	return fmt.Sprintf(" %s.UUID IN (%s) ", monitorTable, strings.Repeat("?", len(f.Ids))), placeholders
 }
 
 type ByUrls struct {
-	urls []string
+	Urls []string
 }
 
 func (f ByUrls) MonitorToSQLite(monitorTable string) (string, []interface{}) {
-	if len(f.urls) == 0 {
+	if len(f.Urls) == 0 {
 		return "", nil
 	}
-	placeholders := make([]interface{}, len(f.urls))
-	for i, id := range f.urls {
+	placeholders := make([]interface{}, len(f.Urls))
+	for i, id := range f.Urls {
 		placeholders[i] = id
 	}
 
-	return fmt.Sprintf(" %s.Url IN (%s) ", monitorTable, strings.Repeat("?", len(f.urls))), placeholders
+	return fmt.Sprintf(" %s.Url IN (%s) ", monitorTable, strings.Repeat("?", len(f.Urls))), placeholders
 }
 
 type ByTypes struct {
-	types []string
+	Types []string
 }
 
 func (f ByTypes) MonitorToSQLite(monitorTable string) (string, []interface{}) {
-	if len(f.types) == 0 {
+	if len(f.Types) == 0 {
 		return "", nil
 	}
-	placeholders := make([]interface{}, len(f.types))
-	for i, id := range f.types {
+	placeholders := make([]interface{}, len(f.Types))
+	for i, id := range f.Types {
 		placeholders[i] = id
 	}
 
-	return fmt.Sprintf(" %s.Type IN (%s) ", monitorTable, strings.Repeat("?", len(f.types))), placeholders
+	return fmt.Sprintf(" %s.Type IN (%s) ", monitorTable, strings.Repeat("?", len(f.Types))), placeholders
 }
 
 type ByIntervalSecs struct {
-	intervals []int
+	Intervals []int
 }
 
 func (f ByIntervalSecs) MonitorToSQLite(monitorTable string) (string, []interface{}) {
-	if len(f.intervals) == 0 {
+	if len(f.Intervals) == 0 {
 		return "", nil
 	}
-	placeholders := make([]interface{}, len(f.intervals))
-	for i, id := range f.intervals {
+	placeholders := make([]interface{}, len(f.Intervals))
+	for i, id := range f.Intervals {
 		placeholders[i] = id
 	}
 
-	return fmt.Sprintf(" %s.Interval_in_seconds IN (%s) ", monitorTable, strings.Repeat("?", len(f.intervals))), placeholders
+	return fmt.Sprintf(" %s.Interval_in_seconds IN (%s) ", monitorTable, strings.Repeat("?", len(f.Intervals))), placeholders
 }
 
 type ByTimeoutSecs struct {
-	timeouts []int
+	Timeouts []int
 }
 
 func (f ByTimeoutSecs) MonitorToSQLite(monitorTable string) (string, []interface{}) {
-	if len(f.timeouts) == 0 {
+	if len(f.Timeouts) == 0 {
 		return "", nil
 	}
-	placeholders := make([]interface{}, len(f.timeouts))
-	for i, id := range f.timeouts {
+	placeholders := make([]interface{}, len(f.Timeouts))
+	for i, id := range f.Timeouts {
 		placeholders[i] = id
 	}
 
-	return fmt.Sprintf(" %s.Timeout_in_seconds IN (%s) ", monitorTable, strings.Repeat("?", len(f.timeouts))), placeholders
+	return fmt.Sprintf(" %s.Timeout_in_seconds IN (%s) ", monitorTable, strings.Repeat("?", len(f.Timeouts))), placeholders
 }
 
 type ByPorts struct {
-	ports []int
+	Ports []int
 }
 
 func (f ByPorts) MonitorToSQLite(monitorTable string) (string, []interface{}) {
-	if len(f.ports) == 0 {
+	if len(f.Ports) == 0 {
 		return "", nil
 	}
-	placeholders := make([]interface{}, len(f.ports))
-	for i, id := range f.ports {
+	placeholders := make([]interface{}, len(f.Ports))
+	for i, id := range f.Ports {
 		placeholders[i] = id
 	}
 
-	return fmt.Sprintf(" %s.Port IN (%s) ", monitorTable, strings.Repeat("?", len(f.ports))), placeholders
+	return fmt.Sprintf(" %s.Port IN (%s) ", monitorTable, strings.Repeat("?", len(f.Ports))), placeholders
 }
 
 func (h *SQLiteHandler) GetMonitors(filters ...MonitorFilter) ([]Monitor, error) {
@@ -341,41 +341,41 @@ type MonitorResultsFilter interface {
 }
 
 type ByCheckIds struct {
-	ids []int
+	Ids []int
 }
 
 func (f ByCheckIds) ResultsToSQLite(monitorTable string) (string, []interface{}) {
-	if len(f.ids) == 0 {
+	if len(f.Ids) == 0 {
 		return "", nil
 	}
-	placeholders := make([]interface{}, len(f.ids))
-	for i, id := range f.ids {
+	placeholders := make([]interface{}, len(f.Ids))
+	for i, id := range f.Ids {
 		placeholders[i] = id
 	}
 
-	return fmt.Sprintf(" %s.Check_id IN (%s) ", monitorTable, strings.Repeat("?", len(f.ids))), placeholders
+	return fmt.Sprintf(" %s.Check_id IN (%s) ", monitorTable, strings.Repeat("?", len(f.Ids))), placeholders
 }
 
 func (f ByMonitorIds) ResultsToSQLite(monitorTable string) (string, []interface{}) {
-	if len(f.ids) == 0 {
+	if len(f.Ids) == 0 {
 		return "", nil
 	}
-	placeholders := make([]interface{}, len(f.ids))
-	for i, id := range f.ids {
+	placeholders := make([]interface{}, len(f.Ids))
+	for i, id := range f.Ids {
 		placeholders[i] = id
 	}
 
-	return fmt.Sprintf(" %s.Monitor_id in (%s) ", monitorTable, strings.Repeat("?", len(f.ids))), placeholders
+	return fmt.Sprintf(" %s.Monitor_id in (%s) ", monitorTable, strings.Repeat("?", len(f.Ids))), placeholders
 }
 
 type ByIsUp struct {
-	up bool
+	Up bool
 }
 
 func (f ByIsUp) ResultsToSQLite(monitorTable string) (string, []interface{}) {
 
 	placeholder := make([]interface{}, 1)
-	if f.up {
+	if f.Up {
 		placeholder[0] = 1
 	} else {
 		placeholder[0] = 0
