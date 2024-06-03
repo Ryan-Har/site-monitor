@@ -68,13 +68,42 @@ func TestSQLiteFunctions(t *testing.T) {
 		}
 	})
 
-	t.Run("Get Single Monitor", func(t *testing.T) {
+	t.Run("Get Single Monitor by each filter", func(t *testing.T) {
 		m := getSampleMonitors(1)[0]
-		monitorIds := []int{m.MonitorID}
 
-		mon, err := h.GetMonitors(ByMonitorIds{monitorIds})
+		_, err := h.GetMonitors(ByMonitorIds{[]int{m.MonitorID}})
 		if err != nil {
-			t.Errorf("Get Single monitor failed, no results: %v", err.Error())
+			t.Errorf("Get Single monitor by id filter failed, no results: %v", err.Error())
+		}
+
+		_, err = h.GetMonitors(ByUUIDs{[]string{m.UUID}})
+		if err != nil {
+			t.Errorf("Get Single monitor by UUID filter failed, no results: %v", err.Error())
+		}
+
+		_, err = h.GetMonitors(ByUrls{[]string{m.URL}})
+		if err != nil {
+			t.Errorf("Get Single monitor by URL filter failed, no results: %v", err.Error())
+		}
+
+		_, err = h.GetMonitors(ByTypes{[]string{m.Type}})
+		if err != nil {
+			t.Errorf("Get Single monitor by Type filter failed, no results: %v", err.Error())
+		}
+
+		_, err = h.GetMonitors(ByIntervalSecs{[]int{m.IntervalSecs}})
+		if err != nil {
+			t.Errorf("Get Single monitor by IntervalSecs filter failed, no results: %v", err.Error())
+		}
+
+		_, err = h.GetMonitors(ByTimeoutSecs{[]int{m.TimeoutSecs}})
+		if err != nil {
+			t.Errorf("Get Single monitor by TimeoutSecs filter failed, no results: %v", err.Error())
+		}
+
+		mon, err := h.GetMonitors(ByPorts{[]int{m.Port}})
+		if err != nil {
+			t.Errorf("Get Single monitor by Port filter failed, no results: %v", err.Error())
 		}
 
 		if len(mon) > 0 && mon[0] != m {

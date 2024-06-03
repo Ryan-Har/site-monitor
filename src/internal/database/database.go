@@ -136,6 +136,102 @@ func (f ByMonitorIds) ToSQLite(monitorTable string) (string, []interface{}) {
 	return fmt.Sprintf(" %s.Monitor_id IN (%s) ", monitorTable, strings.Repeat("?", len(f.ids))), placeholders
 }
 
+type ByUUIDs struct {
+	ids []string
+}
+
+func (f ByUUIDs) ToSQLite(monitorTable string) (string, []interface{}) {
+	if len(f.ids) == 0 {
+		return "", nil
+	}
+	placeholders := make([]interface{}, len(f.ids))
+	for i, id := range f.ids {
+		placeholders[i] = id
+	}
+
+	return fmt.Sprintf(" %s.UUID IN (%s) ", monitorTable, strings.Repeat("?", len(f.ids))), placeholders
+}
+
+type ByUrls struct {
+	urls []string
+}
+
+func (f ByUrls) ToSQLite(monitorTable string) (string, []interface{}) {
+	if len(f.urls) == 0 {
+		return "", nil
+	}
+	placeholders := make([]interface{}, len(f.urls))
+	for i, id := range f.urls {
+		placeholders[i] = id
+	}
+
+	return fmt.Sprintf(" %s.Url IN (%s) ", monitorTable, strings.Repeat("?", len(f.urls))), placeholders
+}
+
+type ByTypes struct {
+	types []string
+}
+
+func (f ByTypes) ToSQLite(monitorTable string) (string, []interface{}) {
+	if len(f.types) == 0 {
+		return "", nil
+	}
+	placeholders := make([]interface{}, len(f.types))
+	for i, id := range f.types {
+		placeholders[i] = id
+	}
+
+	return fmt.Sprintf(" %s.Type IN (%s) ", monitorTable, strings.Repeat("?", len(f.types))), placeholders
+}
+
+type ByIntervalSecs struct {
+	intervals []int
+}
+
+func (f ByIntervalSecs) ToSQLite(monitorTable string) (string, []interface{}) {
+	if len(f.intervals) == 0 {
+		return "", nil
+	}
+	placeholders := make([]interface{}, len(f.intervals))
+	for i, id := range f.intervals {
+		placeholders[i] = id
+	}
+
+	return fmt.Sprintf(" %s.Interval_in_seconds IN (%s) ", monitorTable, strings.Repeat("?", len(f.intervals))), placeholders
+}
+
+type ByTimeoutSecs struct {
+	timeouts []int
+}
+
+func (f ByTimeoutSecs) ToSQLite(monitorTable string) (string, []interface{}) {
+	if len(f.timeouts) == 0 {
+		return "", nil
+	}
+	placeholders := make([]interface{}, len(f.timeouts))
+	for i, id := range f.timeouts {
+		placeholders[i] = id
+	}
+
+	return fmt.Sprintf(" %s.Timeout_in_seconds IN (%s) ", monitorTable, strings.Repeat("?", len(f.timeouts))), placeholders
+}
+
+type ByPorts struct {
+	ports []int
+}
+
+func (f ByPorts) ToSQLite(monitorTable string) (string, []interface{}) {
+	if len(f.ports) == 0 {
+		return "", nil
+	}
+	placeholders := make([]interface{}, len(f.ports))
+	for i, id := range f.ports {
+		placeholders[i] = id
+	}
+
+	return fmt.Sprintf(" %s.Port IN (%s) ", monitorTable, strings.Repeat("?", len(f.ports))), placeholders
+}
+
 func (h *SQLiteHandler) GetMonitors(filters ...MonitorFilter) ([]Monitor, error) {
 	sqlTable := "Monitors"
 	query := "SELECT Monitor_id, UUID, Url, Type, Interval_in_seconds, Timeout_in_seconds, Port FROM " + sqlTable
