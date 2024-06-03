@@ -15,6 +15,9 @@ type DBHandler interface {
 	AddMonitors(monitor ...Monitor) error
 	GetMonitors(filters ...MonitorFilter) ([]Monitor, error)
 	DeleteMonitors(filters ...MonitorFilter) error
+	AddMonitorResults(monitorResults ...MonitorResult) error
+	GetMonitorResults(filters ...MonitorResultsFilter) ([]MonitorResult, error)
+	DeleteMonitorResults(filters ...MonitorResultsFilter) error
 }
 
 type SQLiteHandler struct {
@@ -54,6 +57,12 @@ func openSQLiteDB(dbLoc string) (*sql.DB, error) {
 	err = db.Ping()
 	if err != nil {
 		return nil, err
+	}
+
+	_, err = db.Exec("PRAGMA foreign_keys = ON")
+	if err != nil {
+		// Handle error setting foreign_keys
+		return nil, fmt.Errorf("unable to enforce foreign keys in db: %v", err.Error())
 	}
 	return db, nil
 }
@@ -115,7 +124,7 @@ func (h *SQLiteHandler) AddMonitors(monitor ...Monitor) error {
 
 // Filter defines the interface for filter functions
 type MonitorFilter interface {
-	ToSQLite(monitorTable string) (string, []interface{})
+	MonitorToSQLite(monitorTable string) (string, []interface{})
 }
 
 // ByMonitorIds implements Filter for filtering by monitorIds
@@ -124,7 +133,7 @@ type ByMonitorIds struct {
 }
 
 // Apply implements Filter interface for ByMonitorIds
-func (f ByMonitorIds) ToSQLite(monitorTable string) (string, []interface{}) {
+func (f ByMonitorIds) MonitorToSQLite(monitorTable string) (string, []interface{}) {
 	if len(f.ids) == 0 {
 		return "", nil
 	}
@@ -140,7 +149,7 @@ type ByUUIDs struct {
 	ids []string
 }
 
-func (f ByUUIDs) ToSQLite(monitorTable string) (string, []interface{}) {
+func (f ByUUIDs) MonitorToSQLite(monitorTable string) (string, []interface{}) {
 	if len(f.ids) == 0 {
 		return "", nil
 	}
@@ -156,7 +165,7 @@ type ByUrls struct {
 	urls []string
 }
 
-func (f ByUrls) ToSQLite(monitorTable string) (string, []interface{}) {
+func (f ByUrls) MonitorToSQLite(monitorTable string) (string, []interface{}) {
 	if len(f.urls) == 0 {
 		return "", nil
 	}
@@ -172,7 +181,7 @@ type ByTypes struct {
 	types []string
 }
 
-func (f ByTypes) ToSQLite(monitorTable string) (string, []interface{}) {
+func (f ByTypes) MonitorToSQLite(monitorTable string) (string, []interface{}) {
 	if len(f.types) == 0 {
 		return "", nil
 	}
@@ -188,7 +197,7 @@ type ByIntervalSecs struct {
 	intervals []int
 }
 
-func (f ByIntervalSecs) ToSQLite(monitorTable string) (string, []interface{}) {
+func (f ByIntervalSecs) MonitorToSQLite(monitorTable string) (string, []interface{}) {
 	if len(f.intervals) == 0 {
 		return "", nil
 	}
@@ -204,7 +213,7 @@ type ByTimeoutSecs struct {
 	timeouts []int
 }
 
-func (f ByTimeoutSecs) ToSQLite(monitorTable string) (string, []interface{}) {
+func (f ByTimeoutSecs) MonitorToSQLite(monitorTable string) (string, []interface{}) {
 	if len(f.timeouts) == 0 {
 		return "", nil
 	}
@@ -220,7 +229,7 @@ type ByPorts struct {
 	ports []int
 }
 
-func (f ByPorts) ToSQLite(monitorTable string) (string, []interface{}) {
+func (f ByPorts) MonitorToSQLite(monitorTable string) (string, []interface{}) {
 	if len(f.ports) == 0 {
 		return "", nil
 	}
@@ -239,7 +248,7 @@ func (h *SQLiteHandler) GetMonitors(filters ...MonitorFilter) ([]Monitor, error)
 	var whereClause []string
 	var args []interface{}
 	for _, filter := range filters {
-		condSql, condArgs := filter.ToSQLite(sqlTable)
+		condSql, condArgs := filter.MonitorToSQLite(sqlTable)
 		if condSql != "" {
 			whereClause = append(whereClause, condSql)
 			args = append(args, condArgs...)
@@ -279,7 +288,7 @@ func (h *SQLiteHandler) DeleteMonitors(filters ...MonitorFilter) error {
 	var whereClause []string
 	var args []interface{}
 	for _, filter := range filters {
-		condSql, condArgs := filter.ToSQLite(sqlTable)
+		condSql, condArgs := filter.MonitorToSQLite(sqlTable)
 		if condSql != "" {
 			whereClause = append(whereClause, condSql)
 			args = append(args, condArgs...)
@@ -290,7 +299,152 @@ func (h *SQLiteHandler) DeleteMonitors(filters ...MonitorFilter) error {
 		query += " WHERE " + strings.Join(whereClause, " AND ")
 	}
 
+	h.writeMutex.Lock()
 	_, err := h.DB.Exec(query, args...)
+	h.writeMutex.Unlock()
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+type MonitorResult struct {
+	CheckID        int
+	MonitorID      int
+	IsUp           int
+	ResponseTimeMs int
+	RunTimeEpoch   int
+}
+
+func (h *SQLiteHandler) AddMonitorResults(monitorResults ...MonitorResult) error {
+	stmt, err := h.DB.Prepare("INSERT INTO Results (Monitor_id, Is_up, Response_time_in_ms, Run_time) VALUES (?, ?, ?, ?)")
+	if err != nil {
+		return err
+	}
+	defer stmt.Close() // Close the prepared statement
+
+	h.writeMutex.Lock()
+	for _, m := range monitorResults {
+		_, err := stmt.Exec(m.MonitorID, m.IsUp, m.ResponseTimeMs, m.RunTimeEpoch)
+		if err != nil {
+			h.writeMutex.Unlock()
+			return err
+		}
+	}
+	h.writeMutex.Unlock()
+	return nil
+}
+
+type MonitorResultsFilter interface {
+	ResultsToSQLite(monitorTable string) (string, []interface{})
+}
+
+type ByCheckIds struct {
+	ids []int
+}
+
+func (f ByCheckIds) ResultsToSQLite(monitorTable string) (string, []interface{}) {
+	if len(f.ids) == 0 {
+		return "", nil
+	}
+	placeholders := make([]interface{}, len(f.ids))
+	for i, id := range f.ids {
+		placeholders[i] = id
+	}
+
+	return fmt.Sprintf(" %s.Check_id IN (%s) ", monitorTable, strings.Repeat("?", len(f.ids))), placeholders
+}
+
+func (f ByMonitorIds) ResultsToSQLite(monitorTable string) (string, []interface{}) {
+	if len(f.ids) == 0 {
+		return "", nil
+	}
+	placeholders := make([]interface{}, len(f.ids))
+	for i, id := range f.ids {
+		placeholders[i] = id
+	}
+
+	return fmt.Sprintf(" %s.Monitor_id in (%s) ", monitorTable, strings.Repeat("?", len(f.ids))), placeholders
+}
+
+type ByIsUp struct {
+	up bool
+}
+
+func (f ByIsUp) ResultsToSQLite(monitorTable string) (string, []interface{}) {
+
+	placeholder := make([]interface{}, 1)
+	if f.up {
+		placeholder[0] = 1
+	} else {
+		placeholder[0] = 0
+	}
+
+	return fmt.Sprintf(" %s.Is_up = %s ", monitorTable, strings.Repeat("?", 1)), placeholder
+}
+
+func (h *SQLiteHandler) GetMonitorResults(filters ...MonitorResultsFilter) ([]MonitorResult, error) {
+	sqlTable := "Results"
+	query := "SELECT Check_id, Monitor_id, Is_up, Response_time_in_ms, Run_time FROM " + sqlTable
+
+	var whereClause []string
+	var args []interface{}
+	for _, filter := range filters {
+		condSql, condArgs := filter.ResultsToSQLite(sqlTable)
+		if condSql != "" {
+			whereClause = append(whereClause, condSql)
+			args = append(args, condArgs...)
+		}
+	}
+
+	if len(whereClause) > 0 {
+		query += " WHERE " + strings.Join(whereClause, " AND ")
+	}
+
+	rows, err := h.DB.Query(query, args...)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var monitorResults []MonitorResult
+	for rows.Next() {
+		var m MonitorResult
+		err := rows.Scan(&m.CheckID, &m.MonitorID, &m.IsUp, &m.ResponseTimeMs, &m.RunTimeEpoch)
+		if err != nil {
+			return nil, err
+		}
+		monitorResults = append(monitorResults, m)
+	}
+	return monitorResults, nil
+}
+
+func (h *SQLiteHandler) DeleteMonitorResults(filters ...MonitorResultsFilter) error {
+	if len(filters) == 0 {
+		return fmt.Errorf("filters must accompany delete monitors")
+	}
+
+	sqlTable := "Results"
+	query := "DELETE FROM " + sqlTable
+
+	var whereClause []string
+	var args []interface{}
+	for _, filter := range filters {
+		condSql, condArgs := filter.ResultsToSQLite(sqlTable)
+		if condSql != "" {
+			whereClause = append(whereClause, condSql)
+			args = append(args, condArgs...)
+		}
+	}
+
+	if len(whereClause) > 0 {
+		query += " WHERE " + strings.Join(whereClause, " AND ")
+	}
+
+	h.writeMutex.Lock()
+	_, err := h.DB.Exec(query, args...)
+	h.writeMutex.Unlock()
 	if err != nil {
 		return err
 	}

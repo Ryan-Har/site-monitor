@@ -15,8 +15,8 @@ CREATE TABLE "Results" (
 	"Is_up"	INTEGER NOT NULL,
 	"Response_time_in_ms"	INTEGER NOT NULL,
 	"Run_time"	INTEGER NOT NULL,
-	FOREIGN KEY("Monitor_id") REFERENCES "Monitors"("Monitor_id"),
-	PRIMARY KEY("Check_id" AUTOINCREMENT)
+	PRIMARY KEY("Check_id" AUTOINCREMENT),
+	FOREIGN KEY("Monitor_id") REFERENCES "Monitors"("Monitor_id") ON DELETE CASCADE
 );
 
 --add notifications table to organise which notifications are setup for each user

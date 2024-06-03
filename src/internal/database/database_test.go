@@ -5,6 +5,7 @@ import (
 	"os"
 	"sync"
 	"testing"
+	"time"
 )
 
 var testDBFile = "testdb.db"
@@ -44,6 +45,22 @@ func getSampleMonitors(length int) []Monitor {
 	return monitors
 }
 
+func getSampleMonitorResults(length int) []MonitorResult {
+	var monitorResults []MonitorResult
+
+	for l := range length {
+		m := MonitorResult{
+			CheckID:        l + 1,
+			MonitorID:      l + 1,
+			IsUp:           1,
+			ResponseTimeMs: 10,
+			RunTimeEpoch:   int(time.Now().Unix()),
+		}
+		monitorResults = append(monitorResults, m)
+	}
+	return monitorResults
+}
+
 func TestSQLiteFunctions(t *testing.T) {
 	h, cleanup := setupTesting()
 	defer cleanup()
@@ -71,37 +88,61 @@ func TestSQLiteFunctions(t *testing.T) {
 	t.Run("Get Single Monitor by each filter", func(t *testing.T) {
 		m := getSampleMonitors(1)[0]
 
-		_, err := h.GetMonitors(ByMonitorIds{[]int{m.MonitorID}})
+		mon, err := h.GetMonitors(ByMonitorIds{[]int{m.MonitorID}})
 		if err != nil {
 			t.Errorf("Get Single monitor by id filter failed, no results: %v", err.Error())
 		}
 
-		_, err = h.GetMonitors(ByUUIDs{[]string{m.UUID}})
+		if len(mon) > 0 && mon[0] != m {
+			t.Errorf("Monitor results not accurate")
+		}
+
+		mon, err = h.GetMonitors(ByUUIDs{[]string{m.UUID}})
 		if err != nil {
 			t.Errorf("Get Single monitor by UUID filter failed, no results: %v", err.Error())
 		}
 
-		_, err = h.GetMonitors(ByUrls{[]string{m.URL}})
+		if len(mon) > 0 && mon[0] != m {
+			t.Errorf("Monitor results not accurate")
+		}
+
+		mon, err = h.GetMonitors(ByUrls{[]string{m.URL}})
 		if err != nil {
 			t.Errorf("Get Single monitor by URL filter failed, no results: %v", err.Error())
 		}
 
-		_, err = h.GetMonitors(ByTypes{[]string{m.Type}})
+		if len(mon) > 0 && mon[0] != m {
+			t.Errorf("Monitor results not accurate")
+		}
+
+		mon, err = h.GetMonitors(ByTypes{[]string{m.Type}})
 		if err != nil {
 			t.Errorf("Get Single monitor by Type filter failed, no results: %v", err.Error())
 		}
 
-		_, err = h.GetMonitors(ByIntervalSecs{[]int{m.IntervalSecs}})
+		if len(mon) > 0 && mon[0] != m {
+			t.Errorf("Monitor results not accurate")
+		}
+
+		mon, err = h.GetMonitors(ByIntervalSecs{[]int{m.IntervalSecs}})
 		if err != nil {
 			t.Errorf("Get Single monitor by IntervalSecs filter failed, no results: %v", err.Error())
 		}
 
-		_, err = h.GetMonitors(ByTimeoutSecs{[]int{m.TimeoutSecs}})
+		if len(mon) > 0 && mon[0] != m {
+			t.Errorf("Monitor results not accurate")
+		}
+
+		mon, err = h.GetMonitors(ByTimeoutSecs{[]int{m.TimeoutSecs}})
 		if err != nil {
 			t.Errorf("Get Single monitor by TimeoutSecs filter failed, no results: %v", err.Error())
 		}
 
-		mon, err := h.GetMonitors(ByPorts{[]int{m.Port}})
+		if len(mon) > 0 && mon[0] != m {
+			t.Errorf("Monitor results not accurate")
+		}
+
+		mon, err = h.GetMonitors(ByPorts{[]int{m.Port}})
 		if err != nil {
 			t.Errorf("Get Single monitor by Port filter failed, no results: %v", err.Error())
 		}
@@ -111,7 +152,47 @@ func TestSQLiteFunctions(t *testing.T) {
 		}
 	})
 
-	t.Run("Delete Single Monitor", func(t *testing.T) {
+	t.Run("Add Single Monitor Results", func(t *testing.T) {
+		m := getSampleMonitorResults(1)[0]
+		err := h.AddMonitorResults(m)
+		if err != nil {
+			t.Errorf("error adding monitor result, %v", err.Error())
+		}
+	})
+
+	t.Run("Get Single Monitor Results by each filter", func(t *testing.T) {
+		m := getSampleMonitorResults(1)[0]
+
+		mon, err := h.GetMonitorResults(ByCheckIds{[]int{m.CheckID}})
+		if err != nil {
+			t.Errorf("Get Single monitor result by CheckID filter failed, no results: %v", err.Error())
+		}
+
+		if len(mon) > 0 && mon[0] != m {
+			t.Errorf("Monitor results not accurate")
+		}
+
+		mon, err = h.GetMonitorResults(ByMonitorIds{[]int{m.MonitorID}})
+		if err != nil {
+			t.Errorf("Get Single monitor result by MonitorID filter failed, no results: %v", err.Error())
+		}
+
+		if len(mon) > 0 && mon[0] != m {
+			t.Errorf("Monitor results not accurate")
+		}
+
+		mon, err = h.GetMonitorResults(ByIsUp{m.IsUp != 0})
+		if err != nil {
+			t.Errorf("Get Single monitor result by IsUp filter failed, no results: %v", err.Error())
+		}
+
+		if len(mon) > 0 && mon[0] != m {
+			t.Errorf("Monitor results not accurate")
+		}
+
+	})
+
+	t.Run("Delete single Monitor With PK in use to ensure it cascades", func(t *testing.T) {
 		m := getSampleMonitors(1)[0]
 		monitorIds := []int{m.MonitorID}
 		if err := h.DeleteMonitors(); err == nil {
@@ -121,17 +202,30 @@ func TestSQLiteFunctions(t *testing.T) {
 		if err := h.DeleteMonitors(ByMonitorIds{monitorIds}); err != nil {
 			t.Errorf("Delete Monitor failed: %v", err.Error())
 		}
+
+		mon, err := h.GetMonitorResults(ByMonitorIds{monitorIds})
+		if len(mon) > 0 {
+			t.Errorf("Could get monitor result when it should have been deleted due to cascading FK constraint. %s", err.Error())
+		}
 	})
 
-	// t.Run("Add Multiple Monitors", func(t *testing.T) {
+	t.Run("Add Single Monitor", func(t *testing.T) {
+		m := getSampleMonitors(1)[0]
+		err := h.AddMonitors(m)
+		if err != nil {
+			t.Errorf("error adding monitor, %v", err.Error())
+		}
+	})
 
-	// })
+	t.Run("Delete Single Monitor Results", func(t *testing.T) {
+		m := getSampleMonitorResults(1)[0]
+		monitorIds := []int{m.MonitorID}
+		if err := h.DeleteMonitorResults(); err == nil {
+			t.Errorf("Delete Monitor should have responded with error for no arguments, error was nil")
+		}
 
-	// t.Run("Get Multiple Monitors", func(t *testing.T) {
-
-	// })
-
-	// t.Run("Delete Multiple Monitors", func(t *testing.T) {
-
-	// })
+		if err := h.DeleteMonitorResults(ByMonitorIds{monitorIds}); err != nil {
+			t.Errorf("Delete Monitor failed: %v", err.Error())
+		}
+	})
 }
