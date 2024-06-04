@@ -385,6 +385,20 @@ func (f ByIsUp) ResultsToSQLite(monitorTable string) (string, []interface{}) {
 	return fmt.Sprintf(" %s.Is_up = ? ", monitorTable), placeholder
 }
 
+type BetweenRunTime struct {
+	minEpoch int
+	maxEpoch int
+}
+
+func (f BetweenRunTime) ResultsToSQLite(monitorTable string) (string, []interface{}) {
+
+	placeholder := make([]interface{}, 2)
+	placeholder[0] = f.minEpoch
+	placeholder[0] = f.maxEpoch
+
+	return fmt.Sprintf(" %s.Run_time BETWEEN ? AND ? ", monitorTable), placeholder
+}
+
 func (h *SQLiteHandler) GetMonitorResults(filters ...MonitorResultsFilter) ([]MonitorResult, error) {
 	sqlTable := "Results"
 	query := "SELECT Check_id, Monitor_id, Is_up, Response_time_in_ms, Run_time FROM " + sqlTable
