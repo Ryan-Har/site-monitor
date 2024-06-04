@@ -127,14 +127,14 @@ templ AddMonitorForm() {
     <div class="row my-2 mx-3">
         <div class="card bg-dark-subtle">
             <div class="card-body">
-                <form action="/submit" method="post" hx-boost="true" hx-target="#formContent">
+                <form action="/monitors/new" method="post" hx-boost="true" hx-target="#formContent">
                     <div class="my-2">
                         <label for="typeSelection" class="form-label">Monitor Type</label>
                         <select class="form-select" id="typeSelection" name="typeSelection" hx-get="/monitors/getCreateFormInfo" hx-trigger="change">
                         <option hidden disabled selected value> -- select an option -- </option>
-                        <option value="http">HTTP / Website Monitoring</option>
-                        <option value="ping">PING Monitoring</option>
-                        <option value="port">Port Monitoring</option>
+                        <option value="HTTP">HTTP / Website Monitoring</option>
+                        <option value="ICMP">PING Monitoring</option>
+                        <option value="TCP">Port Monitoring</option>
                     </select>
                     <hr></hr>
                     </div>

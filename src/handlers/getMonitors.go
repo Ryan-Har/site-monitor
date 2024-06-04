@@ -69,17 +69,17 @@ func (h *GetMonitorFormHandler) ServeFormContent(w http.ResponseWriter, r *http.
 
 	//should only ever include a single option, so we'll take the first one
 	switch typeSelection[0] {
-	case "http":
+	case "HTTP":
 		if err := partials.MonitorFormContentHTTP().Render(r.Context(), w); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-	case "ping":
+	case "ICMP":
 		if err := partials.MonitorFormContentPing().Render(r.Context(), w); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-	case "port":
+	case "TCP":
 		if err := partials.MonitorFormContentPort().Render(r.Context(), w); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
