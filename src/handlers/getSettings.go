@@ -1,9 +1,9 @@
 package handlers
 
 import (
-	"fmt"
 	"github.com/Ryan-Har/site-monitor/src/templates"
 	"github.com/Ryan-Har/site-monitor/src/templates/partials"
+	"log/slog"
 	"net/http"
 )
 
@@ -30,12 +30,13 @@ func (h *GetAccountSettingsHandler) ServeHTTP(w http.ResponseWriter, r *http.Req
 	acc := templates.SettingsAccount("Ryan Harris")
 	userInfo, err := GetUserInfoFromContext(r.Context())
 	if err != nil {
-		fmt.Println(err)
+		slog.Warn("error getting user info from context")
 	}
 
 	c := templates.Settings(nav, acc, userInfo)
 	err = templates.Layout("Settings", c).Render(r.Context(), w)
 	if err != nil {
+		slog.Error("error while rendering account settings template", "err", err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -46,12 +47,13 @@ func (h *GetNotificationSettingsHandler) ServeHTTP(w http.ResponseWriter, r *htt
 	not := templates.SettingsNotifications()
 	userInfo, err := GetUserInfoFromContext(r.Context())
 	if err != nil {
-		fmt.Println(err)
+		slog.Warn("error getting user info from context")
 	}
 	c := templates.Settings(nav, not, userInfo)
 
 	err = templates.Layout("Settings", c).Render(r.Context(), w)
 	if err != nil {
+		slog.Error("error while rendering notifications settings template", "err", err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -62,12 +64,13 @@ func (h *GetSecuritySettingsHandler) ServeHTTP(w http.ResponseWriter, r *http.Re
 	sec := templates.SettingsSecurity()
 	userInfo, err := GetUserInfoFromContext(r.Context())
 	if err != nil {
-		fmt.Println(err)
+		slog.Warn("error getting user info from context")
 	}
 
 	c := templates.Settings(nav, sec, userInfo)
 	err = templates.Layout("Settings", c).Render(r.Context(), w)
 	if err != nil {
+		slog.Error("error while rendering security settings template", "err", err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}

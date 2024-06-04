@@ -149,8 +149,6 @@ func (req *Requests) findMatch(mr []makeRequest) (int, error) {
 
 func (req makeRequest) sendRequest(wg *sync.WaitGroup, rchan chan<- makeRequestResponseWithErr) {
 	defer wg.Done()
-	fmt.Println("sending request: ", req)
-	fmt.Println("With type: ", req.rtype)
 	switch req.rtype {
 	case RequestTypeICMP:
 		check, err := sendICMPRequest(req)
@@ -264,9 +262,6 @@ func sendTCPRequest(mr makeRequest) (makeRequestResponse, error) {
 	conn, err := net.DialTimeout("tcp", net.JoinHostPort(mr.url, fmt.Sprint(mr.port)), mr.maxTimeout)
 	end := time.Now()
 	if err != nil {
-		for k := range mr.idTimeout {
-			fmt.Println("error found with:", k)
-		}
 		return resp, fmt.Errorf("error sending tcp request for %v on port %d: %v", mr.url, mr.port, err.Error())
 	}
 	defer conn.Close()

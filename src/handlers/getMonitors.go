@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"fmt"
+	"log/slog"
 	"net/http"
 
 	"github.com/Ryan-Har/site-monitor/src/templates"
@@ -30,12 +31,13 @@ func (h *GetMonitorOverviewHandler) ServeHTTP(w http.ResponseWriter, r *http.Req
 	mCards := partials.MultipleMonitors()
 	userInfo, err := GetUserInfoFromContext(r.Context())
 	if err != nil {
-		fmt.Println(err)
+		slog.Warn("error getting user info from context")
 	}
 	c := templates.MonitorOverview(mCards, userInfo)
 
 	err = templates.Layout("Monitors", c).Render(r.Context(), w)
 	if err != nil {
+		slog.Error("error while rendering incidents template", "err", err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -44,7 +46,7 @@ func (h *GetMonitorOverviewHandler) ServeHTTP(w http.ResponseWriter, r *http.Req
 func (h *GetMonitorFormHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	userInfo, err := GetUserInfoFromContext(r.Context())
 	if err != nil {
-		fmt.Println(err)
+		slog.Warn("error getting user info from context")
 	}
 	c := templates.NewMonitorForm(userInfo)
 
@@ -94,7 +96,6 @@ func (h *GetMonitorByID) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "monitorid not found in query string", http.StatusBadRequest)
 		return
 	}
-	fmt.Println(id)
 	if _, err := fmt.Fprintf(w, "Getting monitor with id: %s", id); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return

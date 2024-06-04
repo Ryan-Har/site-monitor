@@ -2,7 +2,7 @@ package config
 
 import (
 	"encoding/json"
-	"fmt"
+	"log/slog"
 	"os"
 )
 
@@ -47,7 +47,7 @@ func GetConfig() *Config {
 func (c *Config) FirebaseConfigAsJsonBytes() []byte {
 	jsonData, err := json.Marshal(c.FirebaseConfig)
 	if err != nil {
-		fmt.Println("unable to convert firebase config to json")
+		slog.Error("unable to convert firebase config to json")
 	}
 	return jsonData
 }

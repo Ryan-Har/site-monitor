@@ -1,16 +1,16 @@
 package scheduler
 
 import (
-	"fmt"
 	"github.com/Ryan-Har/site-monitor/src/internal/database"
 	"github.com/Ryan-Har/site-monitor/src/internal/requests"
+	"log/slog"
 	"math"
 	"time"
 )
 
 func StartSchedulers(dbh database.DBHandler) {
 	resultsCh := make(chan []requests.Response, 10) // Buffered channel to hold results
-	fmt.Println("scheduler started")
+	slog.Info("scheduler started")
 	// Calculate the duration until the next minute mark
 	now := time.Now()
 	next := now.Truncate(time.Minute).Add(time.Minute)
@@ -22,7 +22,6 @@ func StartSchedulers(dbh database.DBHandler) {
 	// Start the ticker to trigger every minute on the minute
 	ticker := time.NewTicker(time.Minute)
 	defer ticker.Stop()
-	fmt.Println("first processStart run")
 	//run once after sleep, ticker handles after
 	go processStart(dbh, resultsCh)
 
@@ -30,7 +29,6 @@ func StartSchedulers(dbh database.DBHandler) {
 	go processResults(dbh, resultsCh)
 
 	for range ticker.C {
-		fmt.Println("ticker run, processing")
 		go processStart(dbh, resultsCh)
 	}
 }
@@ -83,7 +81,7 @@ func requestsResponseToResultsStruct(req ...requests.Response) []database.Monito
 	var results []database.MonitorResult
 	for _, r := range req {
 		if r.Err != nil {
-			fmt.Printf("error occured with result of request check. original request: %v, error: %s", r.Requests, r.Err.Error())
+			slog.Error("error occured with result of request check", "original_request", r.Requests, "err", r.Err.Error())
 		}
 		result := database.MonitorResult{
 			MonitorID:      r.ID,
@@ -102,7 +100,7 @@ func processStart(dbh database.DBHandler, results chan<- []requests.Response) {
 	secondsFilter := convertMinuteToSecs(currentMinDivisors...)
 	monitorBatch, err := dbh.GetMonitors(database.ByIntervalSecs{Intervals: secondsFilter})
 	if err != nil {
-		fmt.Printf("error getting monitors by interval secs. filter: %v, err: %s \n", secondsFilter, err.Error())
+		slog.Error("error getting monitors by interval secs", "filter", secondsFilter, "err", err.Error())
 	}
 
 	reqBatch := monitorToRequestsStruct(monitorBatch...)
@@ -114,7 +112,7 @@ func processResults(dbh database.DBHandler, results <-chan []requests.Response) 
 	for msg := range results {
 		dbResults := requestsResponseToResultsStruct(msg...)
 		if err := dbh.AddMonitorResults(dbResults...); err != nil {
-			fmt.Println("error adding monitor results to db: ", err.Error())
+			slog.Error("error adding monitor results to db", "err", err.Error())
 		}
 	}
 }

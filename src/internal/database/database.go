@@ -7,6 +7,7 @@ import (
 	_ "embed"
 	"github.com/Ryan-Har/site-monitor/src/config"
 	_ "github.com/mattn/go-sqlite3"
+	"log/slog"
 	"strings"
 	"sync"
 )
@@ -34,7 +35,7 @@ func NewSQLiteHandler() (*DBHandler, error) {
 		return &dbHandler, err
 	}
 	if !isSQLiteDBPopulated(db) {
-		fmt.Println("db in new state, applying schema")
+		slog.Info("db in new state, applying schema")
 		if err = populateSQLiteDB(db); err != nil {
 			return &dbHandler, fmt.Errorf("unable to apply db schema. %s", err.Error())
 		}
@@ -205,7 +206,6 @@ func (f ByIntervalSecs) MonitorToSQLite(monitorTable string) (string, []interfac
 	for i, id := range f.Intervals {
 		placeholders[i] = id
 	}
-	fmt.Println(placeholders...)
 
 	return fmt.Sprintf(" %s.Interval_in_seconds IN (%s) ", monitorTable, generateQuestionMarks(len(f.Intervals))), placeholders
 }

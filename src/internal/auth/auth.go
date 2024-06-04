@@ -6,10 +6,10 @@ import (
 	//"io"
 	firebase "firebase.google.com/go"
 	"firebase.google.com/go/auth"
-	"fmt"
 	"github.com/Ryan-Har/site-monitor/src/config"
 	"github.com/Ryan-Har/site-monitor/src/models"
 	"google.golang.org/api/option"
+	"log/slog"
 	"net/http"
 	"time"
 )
@@ -22,7 +22,7 @@ func NewServer() *Server {
 	opt := option.WithCredentialsFile(config.GetConfig().FIREBASE_SERVICE_ACCOUNT_LOCATION)
 	app, err := firebase.NewApp(context.Background(), nil, opt)
 	if err != nil {
-		fmt.Printf("error initializing firebase app: %v\n", err)
+		slog.Error("error initializing firebase app", "err", err.Error())
 	}
 	return &Server{app: app}
 }
@@ -55,12 +55,11 @@ func (s *Server) setAuthCookie(w http.ResponseWriter, token string) {
 func (s *Server) VerifyLogin(w http.ResponseWriter, r *http.Request) {
 	idToken := r.Header.Get("Authorization")
 
-	token, err := s.verifyIDToken(idToken)
+	_, err := s.verifyIDToken(idToken)
 	if err != nil {
 		http.Error(w, "Invalid token", http.StatusUnauthorized)
 		return
 	}
-	fmt.Printf("Verified token: %v", token)
 
 	s.setAuthCookie(w, idToken)
 	w.Write([]byte(`{"Response": "Token Valid"}`))
@@ -77,7 +76,7 @@ func (s *Server) AuthMiddleware(next http.Handler) http.Handler {
 
 		cookie, err := r.Cookie("auth-token")
 		if err != nil {
-			fmt.Println("error retrieving auth-token cookie for request", err)
+			slog.Info("error retrieving auth-token cookie for request", "err", err.Error())
 			http.Redirect(w, r, "/login", http.StatusFound)
 			return
 		}
@@ -85,7 +84,7 @@ func (s *Server) AuthMiddleware(next http.Handler) http.Handler {
 		//verify the token is still valid
 		token, err := s.verifyIDToken(cookie.Value)
 		if err != nil {
-			fmt.Println("id token not currently valid, need to reauth", err)
+			slog.Info("id token not currently valid, reauth", "err", err.Error())
 			http.Redirect(w, r, "/login", http.StatusFound)
 			return
 		}

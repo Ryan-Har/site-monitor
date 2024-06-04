@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"github.com/Ryan-Har/site-monitor/src/templates"
+	"log/slog"
 	"net/http"
 )
 
@@ -16,6 +17,7 @@ func (h *GetSignupHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	err := templates.Layout("Sign up", c).Render(r.Context(), w)
 	if err != nil {
+		slog.Error("error while rendering signup template", "err", err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
