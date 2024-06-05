@@ -90,9 +90,8 @@ func Send(req ...Requests) []Response {
 				Err:      sent.err,
 			}
 			if sent.err != nil || !sent.Up || timeout < sent.ResponseTime { //errored or responded in a longer time than was requested
-				responseItem.CheckResponse = CheckResponse{
-					Up: false,
-				}
+				responseItem.CheckResponse = sent.CheckResponse
+				responseItem.CheckResponse.Up = false
 			} else {
 				responseItem.CheckResponse = sent.CheckResponse
 			}
