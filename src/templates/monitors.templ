@@ -5,14 +5,16 @@ import(
     "github.com/Ryan-Har/site-monitor/src/models"
 )
 
-templ MonitorOverview(monitorCards templ.Component, userInfo models.UserInfo) {
+templ MonitorOverview(userInfo models.UserInfo, cards ...models.MonitorCardGenerationModel) {
     <div class="container-fluid">
         <div class="row flex-nowrap">
             @partials.SideBar(userInfo)
             <div class="col py-3">
                 //right side content
                 @partials.MonitorOptions()
-                @monitorCards
+                for _, card := range cards{
+                    @partials.SingleMonitor(card.Up, card.Name, card.RefreshIntervalSecs)
+}
             </div>
         </div>
     </div>

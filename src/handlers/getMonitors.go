@@ -4,15 +4,22 @@ import (
 	"fmt"
 	"log/slog"
 	"net/http"
+	"time"
 
+	"github.com/Ryan-Har/site-monitor/src/internal/database"
+	"github.com/Ryan-Har/site-monitor/src/models"
 	"github.com/Ryan-Har/site-monitor/src/templates"
 	"github.com/Ryan-Har/site-monitor/src/templates/partials"
 )
 
-type GetMonitorOverviewHandler struct{}
+type GetMonitorOverviewHandler struct {
+	dbHandler database.DBHandler
+}
 
-func NewGetMonitorOverviewHandler() *GetMonitorOverviewHandler {
-	return &GetMonitorOverviewHandler{}
+func NewGetMonitorOverviewHandler(dbh database.DBHandler) *GetMonitorOverviewHandler {
+	return &GetMonitorOverviewHandler{
+		dbHandler: dbh,
+	}
 }
 
 type GetMonitorFormHandler struct{}
@@ -28,12 +35,68 @@ func NewGetMonitorByID() *GetMonitorByID {
 }
 
 func (h *GetMonitorOverviewHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	mCards := partials.MultipleMonitors()
 	userInfo, err := GetUserInfoFromContext(r.Context())
 	if err != nil {
-		slog.Warn("error getting user info from context")
+		slog.Error("error getting user info from context for newmonitor form post")
+		w.WriteHeader(http.StatusForbidden)
+		fmt.Fprintf(w, "error getting user info from context, reauthentication needed")
+		return
 	}
-	c := templates.MonitorOverview(mCards, userInfo)
+
+	userMonitors, err := h.dbHandler.GetMonitors(database.ByUUIDs{Ids: []string{userInfo.UUID}})
+	if err != nil {
+		fmt.Println(userMonitors)
+		//handle error by sending no cards, not monitors are setup
+	}
+
+	usersMonitorIDs := make([]int, 0, len(userMonitors))
+	userMonitorInfoMap := make(map[int]database.Monitor)
+	for _, usermon := range userMonitors {
+		usersMonitorIDs = append(usersMonitorIDs, usermon.MonitorID)
+		userMonitorInfoMap[usermon.MonitorID] = usermon
+	}
+	monitorResults, err := h.dbHandler.GetMonitorResults(
+		database.ByMonitorIds{Ids: usersMonitorIDs},
+		database.BetweenRunTime{MinEpoch: unixTime7DaysAgo(), MaxEpoch: unixTimeNow()})
+	if err != nil {
+		slog.Error("error getting monitor results") //handle better
+	}
+
+	userMonitorResultsMap := make(map[int][]database.MonitorResult)
+
+	for _, userRes := range monitorResults {
+		userMonitorResultsMap[userRes.MonitorID] = append(userMonitorResultsMap[userRes.MonitorID], userRes)
+	}
+
+	cards := make([]models.MonitorCardGenerationModel, 0, len(usersMonitorIDs))
+	for _, monitorId := range usersMonitorIDs {
+		var currentMonitor models.MonitorCardGenerationModel
+
+		name := fmt.Sprintf("%s: %s", userMonitorInfoMap[monitorId].Type, userMonitorInfoMap[monitorId].URL)
+		interval := userMonitorInfoMap[monitorId].IntervalSecs
+
+		currentMonitor.Name = name
+		currentMonitor.RefreshIntervalSecs = interval
+
+		// if not ok then no checks have happened yet
+		monitorIdResults, ok := userMonitorResultsMap[monitorId]
+		if ok {
+			lastResult := monitorIdResults[len(monitorIdResults)-1]
+			isLastUp := lastResult.IsUp == 1
+			currentMonitor.Up = isLastUp
+		}
+		cards = append(cards, currentMonitor)
+	}
+
+	// for k, v := range userMonitorInfoMap {
+	// 	slog.Info("infomap: ", "id", k, "info", v)
+	// }
+
+	// for k, v := range userMonitorResultsMap {
+	// 	slog.Info("resultsmap: ", "id", k, "results", v)
+	// }
+
+	c := templates.MonitorOverview(userInfo, cards...)
 
 	err = templates.Layout("Monitors", c).Render(r.Context(), w)
 	if err != nil {
@@ -100,4 +163,12 @@ func (h *GetMonitorByID) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+}
+
+func unixTimeNow() int {
+	return int(time.Now().Unix())
+}
+
+func unixTime7DaysAgo() int {
+	return int(time.Now().Add(-7 * 24 * time.Hour).Unix())
 }

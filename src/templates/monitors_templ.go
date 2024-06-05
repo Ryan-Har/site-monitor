@@ -15,7 +15,7 @@ import (
 	"github.com/Ryan-Har/site-monitor/src/templates/partials"
 )
 
-func MonitorOverview(monitorCards templ.Component, userInfo models.UserInfo) templ.Component {
+func MonitorOverview(userInfo models.UserInfo, cards ...models.MonitorCardGenerationModel) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
 		if !templ_7745c5c3_IsBuffer {
@@ -44,9 +44,11 @@ func MonitorOverview(monitorCards templ.Component, userInfo models.UserInfo) tem
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = monitorCards.Render(ctx, templ_7745c5c3_Buffer)
-		if templ_7745c5c3_Err != nil {
-			return templ_7745c5c3_Err
+		for _, card := range cards {
+			templ_7745c5c3_Err = partials.SingleMonitor(card.Up, card.Name, card.RefreshIntervalSecs).Render(ctx, templ_7745c5c3_Buffer)
+			if templ_7745c5c3_Err != nil {
+				return templ_7745c5c3_Err
+			}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></div></div>")
 		if templ_7745c5c3_Err != nil {

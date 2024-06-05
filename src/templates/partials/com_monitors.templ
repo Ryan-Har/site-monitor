@@ -122,12 +122,25 @@ templ addMonitorFormTitle() {
     </div>
 }
 
+
 templ AddMonitorForm() {
     @addMonitorFormTitle()
+    <style type="text/css">
+        .error-message {
+            color:red;
+        }
+        .error input {
+            box-shadow: 0 0 3px #CC0000;
+        }
+        .valid input {
+            box-shadow: 0 0 3px #36cc00;
+        }
+    </style>
+
     <div class="row my-2 mx-3">
         <div class="card bg-dark-subtle">
             <div class="card-body">
-                <form action="/monitors/new" method="post" hx-boost="true" hx-target="#formContent">
+                <form action="/monitors/new" method="post" hx-boost="true" hx-target="#formContent" id="addMonitorForm">
                     <div class="my-2">
                         <label for="typeSelection" class="form-label">Monitor Type</label>
                         <select class="form-select" id="typeSelection" name="typeSelection" hx-get="/monitors/getCreateFormInfo" hx-trigger="change">
@@ -143,12 +156,26 @@ templ AddMonitorForm() {
 
                     </div>
                     <div class="text-end">
-                        <button class="btn btn-primary" type="submit">Submit</button>
+                        <button class="btn btn-primary" id="formSubmitButton" type="submit">Submit</button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
+    <script>
+    const form = document.getElementById('addMonitorForm');
+    const submitButton = document.getElementById('formSubmitButton');
+
+    function checkErrors() {
+    const hasErrors = !!form.querySelectorAll(".error").length;
+
+    submitButton.disabled = hasErrors;
+    }
+
+    checkErrors();
+
+    form.addEventListener("htmx:afterSwap", checkErrors);
+    </script>
 }
 
 templ MonitorFormContentHTTP() {
@@ -163,7 +190,7 @@ templ MonitorFormContentHTTP() {
 }
 
 templ MonitorFormContentPing() {
-    @MonitorLocationPing()
+    @MonitorLocationIpOrHost()
     <hr></hr>
     @NotificationSelection(getSampleNotifications())
     <hr></hr>
@@ -183,25 +210,79 @@ templ MonitorFormContentPort() {
     <hr></hr>
 }
 
-templ MonitorLocationPing() {
+templ MonitorLocationIpOrHost() {
+    <div hx-target="this" hx-swap="outerHTML">
     <label for="monitorLocation" class="form-label">IP Or Host To Monitor</label>
-    <input type="text" class="form-control" id="monitorLocation" name="monitorLocation" placeholder="example.com OR 8.8.8.8"></input>
+    <input type="text" class="form-control" id="monitorLocation" name="monitorLocation" placeholder="example.com OR 8.8.8.8" hx-post="/validation/monitorlocationiporhost"></input>
+    </div>
+}
+
+templ MonitorLocationIpOrHostValidationResponseValid(curValue string) {
+    <div hx-target="this" hx-swap="outerHTML" class="valid">
+    <label for="monitorLocation" class="form-label">IP Or Host To Monitor</label>
+    <input type="text" class="form-control" id="monitorLocation" name="monitorLocation" placeholder="example.com OR 8.8.8.8" hx-post="/validation/monitorlocationiporhost" value={ curValue }></input>
+    </div>
+}
+
+templ MonitorLocationIpOrHostValidationResponseInvalid(curValue string, errMsg string) {
+    <div hx-target="this" hx-swap="outerHTML" class="error">
+    <label for="monitorLocation" class="form-label">IP Or Host To Monitor</label>
+    <input type="text" class="form-control" id="monitorLocation" name="monitorLocation" placeholder="example.com OR 8.8.8.8" hx-post="/validation/monitorlocationiporhost" value={ curValue }></input>
+    <div class="error-message"> { errMsg } </div>
+    </div>
 }
 
 templ MonitorLocationHttp() {
+    <div hx-target="this" hx-swap="outerHTML">
     <label for="monitorLocation" class="form-label">URL To Monitor</label>
-    <input type="text" class="form-control" id="monitorLocation" name="monitorLocation" placeholder="https://www.example.com"></input>
+    <input type="text" class="form-control" id="monitorLocation" name="monitorLocation" placeholder="https://www.example.com" hx-post="/validation/monitorlocationhttp"></input>
+    </div>
+}
+
+templ MonitorLocationHttpValidationResponseValid(curValue string) {
+    <div hx-target="this" hx-swap="outerHTML" class="valid">
+    <label for="monitorLocation" class="form-label">URL To Monitor</label>
+    <input type="text" class="form-control" id="monitorLocation" name="monitorLocation" placeholder="https://www.example.com" hx-post="/validation/monitorlocationhttp" value={ curValue }></input>
+    </div>
+}
+
+templ MonitorLocationHttpValidationResponseInvalid(curValue string, errMsg string) {
+    <div hx-target="this" hx-swap="outerHTML" class="error">
+    <label for="monitorLocation" class="form-label">URL To Monitor</label>
+    <input type="text" class="form-control" id="monitorLocation" name="monitorLocation" placeholder="https://www.example.com" hx-post="/validation/monitorlocationhttp" value={ curValue }></input>
+    <div class="error-message"> { errMsg } </div>
+    </div>
+}
+
+templ MonitorPortNumber() {
+    <div hx-target="this" hx-swap="outerHTML">
+    <label for="monitorPort" class="form-label">Port To Monitor</label>
+    <input type="number" class="form-control" id="monitorPort" name="monitorPort" placeholder="143" hx-post="/validation/monitorportnumber"></input>
+    </div>
+}
+
+templ MonitorPortNumberValidationResponseValid(curValue string) {
+    <div hx-target="this" hx-swap="outerHTML" class="valid">
+    <label for="monitorPort" class="form-label">Port To Monitor</label>
+    <input type="number" class="form-control" id="monitorPort" name="monitorPort" placeholder="143" hx-post="/validation/monitorportnumber" value={ curValue }></input>
+    </div>
+}
+
+templ MonitorPortNumberValidationResponseInvalid(curValue string, errMsg string) {
+    <div hx-target="this" hx-swap="outerHTML" class="error">
+    <label for="monitorPort" class="form-label">Port To Monitor</label>
+    <input type="number" class="form-control" id="monitorPort" name="monitorPort" placeholder="143" hx-post="/validation/monitorportnumber" value={ curValue }></input>
+    <div class="error-message"> { errMsg } </div>
+    </div>
 }
 
 templ MonitorLocationPort() {
     <div class="row">
         <div class="col-6">
-            <label for="monitorLocation" class="form-label">URL, IP Or Host To Monitor</label>
-            <input type="text" class="form-control" id="monitorLocation" name="monitorLocation" placeholder="example.com OR 8.8.8.8"></input>
+            @MonitorLocationIpOrHost()        
         </div>
         <div class="col-6">
-            <label for="monitorPort" class="form-label">Port To Monitor</label>
-            <input type="number" class="form-control" id="monitorPort" name="monitorPort" placeholder="143"></input>
+            @MonitorPortNumber()
         </div>
     </div>
 }

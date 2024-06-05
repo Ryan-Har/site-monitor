@@ -5,11 +5,12 @@ import (
 	"fmt"
 
 	_ "embed"
-	"github.com/Ryan-Har/site-monitor/src/config"
-	_ "github.com/mattn/go-sqlite3"
 	"log/slog"
 	"strings"
 	"sync"
+
+	"github.com/Ryan-Har/site-monitor/src/config"
+	_ "github.com/mattn/go-sqlite3"
 )
 
 type DBHandler interface {
@@ -135,9 +136,6 @@ type ByMonitorIds struct {
 
 // Apply implements Filter interface for ByMonitorIds
 func (f ByMonitorIds) MonitorToSQLite(monitorTable string) (string, []interface{}) {
-	if len(f.Ids) == 0 {
-		return "", nil
-	}
 	placeholders := make([]interface{}, len(f.Ids))
 	for i, id := range f.Ids {
 		placeholders[i] = id
@@ -151,9 +149,6 @@ type ByUUIDs struct {
 }
 
 func (f ByUUIDs) MonitorToSQLite(monitorTable string) (string, []interface{}) {
-	if len(f.Ids) == 0 {
-		return "", nil
-	}
 	placeholders := make([]interface{}, len(f.Ids))
 	for i, id := range f.Ids {
 		placeholders[i] = id
@@ -167,9 +162,6 @@ type ByUrls struct {
 }
 
 func (f ByUrls) MonitorToSQLite(monitorTable string) (string, []interface{}) {
-	if len(f.Urls) == 0 {
-		return "", nil
-	}
 	placeholders := make([]interface{}, len(f.Urls))
 	for i, id := range f.Urls {
 		placeholders[i] = id
@@ -183,9 +175,6 @@ type ByTypes struct {
 }
 
 func (f ByTypes) MonitorToSQLite(monitorTable string) (string, []interface{}) {
-	if len(f.Types) == 0 {
-		return "", nil
-	}
 	placeholders := make([]interface{}, len(f.Types))
 	for i, id := range f.Types {
 		placeholders[i] = id
@@ -199,9 +188,6 @@ type ByIntervalSecs struct {
 }
 
 func (f ByIntervalSecs) MonitorToSQLite(monitorTable string) (string, []interface{}) {
-	if len(f.Intervals) == 0 {
-		return "", nil
-	}
 	placeholders := make([]interface{}, len(f.Intervals))
 	for i, id := range f.Intervals {
 		placeholders[i] = id
@@ -215,9 +201,6 @@ type ByTimeoutSecs struct {
 }
 
 func (f ByTimeoutSecs) MonitorToSQLite(monitorTable string) (string, []interface{}) {
-	if len(f.Timeouts) == 0 {
-		return "", nil
-	}
 	placeholders := make([]interface{}, len(f.Timeouts))
 	for i, id := range f.Timeouts {
 		placeholders[i] = id
@@ -231,9 +214,6 @@ type ByPorts struct {
 }
 
 func (f ByPorts) MonitorToSQLite(monitorTable string) (string, []interface{}) {
-	if len(f.Ports) == 0 {
-		return "", nil
-	}
 	placeholders := make([]interface{}, len(f.Ports))
 	for i, id := range f.Ports {
 		placeholders[i] = id
@@ -346,9 +326,6 @@ type ByCheckIds struct {
 }
 
 func (f ByCheckIds) ResultsToSQLite(monitorTable string) (string, []interface{}) {
-	if len(f.Ids) == 0 {
-		return "", nil
-	}
 	placeholders := make([]interface{}, len(f.Ids))
 	for i, id := range f.Ids {
 		placeholders[i] = id
@@ -358,9 +335,6 @@ func (f ByCheckIds) ResultsToSQLite(monitorTable string) (string, []interface{})
 }
 
 func (f ByMonitorIds) ResultsToSQLite(monitorTable string) (string, []interface{}) {
-	if len(f.Ids) == 0 {
-		return "", nil
-	}
 	placeholders := make([]interface{}, len(f.Ids))
 	for i, id := range f.Ids {
 		placeholders[i] = id
@@ -386,15 +360,15 @@ func (f ByIsUp) ResultsToSQLite(monitorTable string) (string, []interface{}) {
 }
 
 type BetweenRunTime struct {
-	minEpoch int
-	maxEpoch int
+	MinEpoch int
+	MaxEpoch int
 }
 
 func (f BetweenRunTime) ResultsToSQLite(monitorTable string) (string, []interface{}) {
 
 	placeholder := make([]interface{}, 2)
-	placeholder[0] = f.minEpoch
-	placeholder[0] = f.maxEpoch
+	placeholder[0] = f.MinEpoch
+	placeholder[1] = f.MaxEpoch
 
 	return fmt.Sprintf(" %s.Run_time BETWEEN ? AND ? ", monitorTable), placeholder
 }
@@ -416,7 +390,6 @@ func (h *SQLiteHandler) GetMonitorResults(filters ...MonitorResultsFilter) ([]Mo
 	if len(whereClause) > 0 {
 		query += " WHERE " + strings.Join(whereClause, " AND ")
 	}
-
 	rows, err := h.DB.Query(query, args...)
 	if err != nil {
 		return nil, err
