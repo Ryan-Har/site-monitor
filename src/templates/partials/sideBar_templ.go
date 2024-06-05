@@ -27,7 +27,7 @@ func SideBar(userInfo models.UserInfo) templ.Component {
 			templ_7745c5c3_Var1 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"col-2 col-sm-3 col-xl-2 px-sm-1 px-0 bg-dark-subtle\"><div class=\"d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 min-vh-100\">")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"col-2 col-sm-3 col-xl-2 px-sm-1 px-0 bg-dark-subtle\"><div class=\"d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 min-vh-100 position-fixed h-100\">")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

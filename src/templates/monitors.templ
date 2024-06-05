@@ -14,7 +14,7 @@ templ MonitorOverview(userInfo models.UserInfo, cards ...models.MonitorCardGener
                 @partials.MonitorOptions()
                 for _, card := range cards{
                     @partials.SingleMonitor(card.Up, card.Name, card.RefreshIntervalSecs)
-}
+                }
             </div>
         </div>
     </div>
