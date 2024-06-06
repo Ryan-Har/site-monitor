@@ -39,7 +39,14 @@ templ sideBarNavInfo() {
 
 templ sideBarUserSection(name string) {
     <div class="dropdown pb-4 text-decoration-none align-items-center justify-content-center">
-        <img src="https://github.com/mdo.png" alt="hugenerd" width="40" height="40" class="rounded-circle"></img>
+        //<img src="https://github.com/mdo.png" alt="hugenerd" width="40" height="40" class="rounded-circle"></img>
+        <span class="rounded-circle initials text-secondary-emphasis bg-light-subtle">
+        if len(name) > 1 {
+            { string(name[0]) }
+        } else {
+            { "U" }
+        }
+        </span>
         <span class="mx-2 text-secondary-emphasis">{ name }</span>
         <i class="bi bi-three-dots" data-bs-toggle="dropdown" aria-expanded="false"></i>
         <ul class="dropdown-menu" aria-labelledby="dropdownUser1">
@@ -52,4 +59,15 @@ templ sideBarUserSection(name string) {
             <li><a class="dropdown-item" href="#">Sign out</a></li>
         </ul>
     </div>
+    <style>
+        .initials {
+    display: inline-block;
+    width: 40px;
+    height: 40px;
+    text-align: center;
+
+    font-size: 1.5rem;
+    font-weight: bold;
+    }
+    </style>
 }
