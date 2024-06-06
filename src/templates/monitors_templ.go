@@ -45,7 +45,7 @@ func MonitorOverview(userInfo models.UserInfo, cards ...models.MonitorCardGenera
 			return templ_7745c5c3_Err
 		}
 		for _, card := range cards {
-			templ_7745c5c3_Err = partials.SingleMonitor(card.Up, card.Name, card.RefreshIntervalSecs).Render(ctx, templ_7745c5c3_Buffer)
+			templ_7745c5c3_Err = partials.SingleMonitor(card).Render(ctx, templ_7745c5c3_Buffer)
 			if templ_7745c5c3_Err != nil {
 				return templ_7745c5c3_Err
 			}
@@ -55,6 +55,10 @@ func MonitorOverview(userInfo models.UserInfo, cards ...models.MonitorCardGenera
 			return templ_7745c5c3_Err
 		}
 		templ_7745c5c3_Err = EnableTooltip().Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<style>\n        .dropdown-item {\n            cursor: pointer;\n        }\n    </style>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

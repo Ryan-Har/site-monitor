@@ -1,7 +1,9 @@
 package models
 
 type MonitorCardGenerationModel struct {
-	Up                  bool
+	MonitorID           int
+	Up                  bool //is it currently up?
 	Name                string
-	RefreshIntervalSecs int
+	RefreshIntervalSecs int //how often is the check run?
+	LastChangeSecs      int //when the status last changed
 }

@@ -13,12 +13,17 @@ templ MonitorOverview(userInfo models.UserInfo, cards ...models.MonitorCardGener
                 //right side content
                 @partials.MonitorOptions()
                 for _, card := range cards{
-                    @partials.SingleMonitor(card.Up, card.Name, card.RefreshIntervalSecs)
+                    @partials.SingleMonitor(card)
                 }
             </div>
         </div>
     </div>
     @EnableTooltip()
+    <style>
+        .dropdown-item {
+            cursor: pointer;
+        }
+    </style>
 }
 
 templ NewMonitorForm(userInfo models.UserInfo) {

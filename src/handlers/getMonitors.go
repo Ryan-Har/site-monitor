@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log/slog"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/Ryan-Har/site-monitor/src/internal/database"
@@ -28,10 +29,24 @@ func NewGetMonitorFormHandler() *GetMonitorFormHandler {
 	return &GetMonitorFormHandler{}
 }
 
-type GetMonitorByID struct{}
+type GetMonitorByID struct {
+	dbHandler database.DBHandler
+}
 
-func NewGetMonitorByID() *GetMonitorByID {
-	return &GetMonitorByID{}
+func NewGetMonitorByID(dbh database.DBHandler) *GetMonitorByID {
+	return &GetMonitorByID{
+		dbHandler: dbh,
+	}
+}
+
+type DeleteMonitorByID struct {
+	dbHandler database.DBHandler
+}
+
+func NewDeleteMonitorByID(dbh database.DBHandler) *DeleteMonitorByID {
+	return &DeleteMonitorByID{
+		dbHandler: dbh,
+	}
 }
 
 func (h *GetMonitorOverviewHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -75,6 +90,7 @@ func (h *GetMonitorOverviewHandler) ServeHTTP(w http.ResponseWriter, r *http.Req
 		name := fmt.Sprintf("%s: %s", userMonitorInfoMap[monitorId].Type, userMonitorInfoMap[monitorId].URL)
 		interval := userMonitorInfoMap[monitorId].IntervalSecs
 
+		currentMonitor.MonitorID = monitorId
 		currentMonitor.Name = name
 		currentMonitor.RefreshIntervalSecs = interval
 
@@ -84,6 +100,15 @@ func (h *GetMonitorOverviewHandler) ServeHTTP(w http.ResponseWriter, r *http.Req
 			lastResult := monitorIdResults[len(monitorIdResults)-1]
 			isLastUp := lastResult.IsUp == 1
 			currentMonitor.Up = isLastUp
+
+			var lastChangeSeconds int
+			for i := len(monitorIdResults) - 1; i >= 0; i-- {
+				if (monitorIdResults[i].IsUp == 1) != isLastUp {
+					lastChangeSeconds = lastResult.RunTimeEpoch - monitorIdResults[i].RunTimeEpoch
+					break
+				}
+			}
+			currentMonitor.LastChangeSecs = lastChangeSeconds
 		}
 		cards = append(cards, currentMonitor)
 	}
@@ -163,6 +188,25 @@ func (h *GetMonitorByID) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+}
+
+func (h *DeleteMonitorByID) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	idStr := r.PathValue("monitorid")
+	if idStr == "" {
+		http.Error(w, "monitorid not found in query string", http.StatusBadRequest)
+		return
+	}
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		http.Error(w, "error: unable to convert monitorid to int", http.StatusBadRequest)
+		return
+	}
+	if err = h.dbHandler.DeleteMonitors(database.ByMonitorIds{Ids: []int{id}}); err != nil {
+		http.Error(w, "error: unable to delete monitor", http.StatusInternalServerError)
+		return
+	}
+	//return empty string, htmx is replacing the element with this
+	fmt.Fprintf(w, "")
 }
 
 func unixTimeNow() int {

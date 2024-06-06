@@ -95,7 +95,7 @@ func sideBarUserSection(name string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		if len(name) < 1 {
+		if len(name) > 1 {
 			var templ_7745c5c3_Var4 string
 			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(string(name[0]))
 			if templ_7745c5c3_Err != nil {
