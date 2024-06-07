@@ -150,6 +150,8 @@ templ ChangeDisplayNameJS() {
 
     displayNameNotificationElement.textContent = 'Display name changed successfully!';
     fullNameInput.value = ''; // Clear display name field after success
+    user.getIdToken(true).then((idToken) => {
+      updateAuthCookie(idToken)});
   } catch (error) {
     console.error('Error changing display name:', error);
     displayNameNotificationElement.textContent = 'An error occurred. Please try again.';
