@@ -125,3 +125,57 @@ templ MonitorAuthState() {
     };
   </script>
 }
+
+templ ChangePasswordJS() {
+  <script>
+  const changePasswordForm = document.getElementById("changePasswordForm")
+  const currentPasswordInput = document.getElementById("currentPassword")
+  const newPasswordInput = document.getElementById("newPassword")
+  const repeatNewPasswordInput = document.getElementById("repeatNewPassword")
+  const notificationElement = document.getElementById("passwordNotification")
+
+  changePasswordForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
+
+    const currentPassword = currentPasswordInput.value;
+    const newPassword = newPasswordInput.value;
+    const repeatPassword = repeatNewPasswordInput.value;
+
+    // Clear any previous notifications
+    notificationElement.textContent = '';
+
+    // Validate passwords
+    if (newPassword !== repeatPassword) {
+      notificationElement.textContent = 'New passwords do not match.';
+      return;
+    } else if (newPassword.length < 8) {
+      notificationElement.textContent = 'New password must be at least 8 characters long.';
+      return;
+    }
+
+    try {
+      // Get the currently signed-in user
+      const user = firebase.auth().currentUser;
+
+      // Re-authenticate the user with their current password before updating
+      const credential = firebase.auth.EmailAuthProvider.credential(user.email, currentPassword);
+      await user.reauthenticateWithCredential(credential);
+
+      // Update the user's password with the new one
+      await user.updatePassword(newPassword);
+
+      notificationElement.textContent = 'Password changed successfully!';
+      currentPasswordInput.value = ''; // Clear password fields after successful change
+      newPasswordInput.value = '';
+      repeatNewPasswordInput.value = '';
+    } catch (error) {
+        if (error.code === 'auth/internal-error') {
+        notificationElement.textContent = 'Current password incorrect.';
+      } else {
+        console.error('Error changing password:', error);
+        notificationElement.textContent = 'An error occurred. Please try again.';
+      }
+    }
+  });
+  </script>
+}

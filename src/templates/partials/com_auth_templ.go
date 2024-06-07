@@ -142,3 +142,27 @@ func MonitorAuthState() templ.Component {
 		return templ_7745c5c3_Err
 	})
 }
+
+func ChangePasswordJS() templ.Component {
+	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
+		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
+		if !templ_7745c5c3_IsBuffer {
+			templ_7745c5c3_Buffer = templ.GetBuffer()
+			defer templ.ReleaseBuffer(templ_7745c5c3_Buffer)
+		}
+		ctx = templ.InitializeContext(ctx)
+		templ_7745c5c3_Var5 := templ.GetChildren(ctx)
+		if templ_7745c5c3_Var5 == nil {
+			templ_7745c5c3_Var5 = templ.NopComponent
+		}
+		ctx = templ.ClearChildren(ctx)
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<script>\n  const changePasswordForm = document.getElementById(\"changePasswordForm\")\n  const currentPasswordInput = document.getElementById(\"currentPassword\")\n  const newPasswordInput = document.getElementById(\"newPassword\")\n  const repeatNewPasswordInput = document.getElementById(\"repeatNewPassword\")\n  const notificationElement = document.getElementById(\"passwordNotification\")\n\n  changePasswordForm.addEventListener('submit', async (event) => {\n    event.preventDefault();\n\n    const currentPassword = currentPasswordInput.value;\n    const newPassword = newPasswordInput.value;\n    const repeatPassword = repeatNewPasswordInput.value;\n\n    // Clear any previous notifications\n    notificationElement.textContent = '';\n\n    // Validate passwords\n    if (newPassword !== repeatPassword) {\n      notificationElement.textContent = 'New passwords do not match.';\n      return;\n    } else if (newPassword.length < 8) {\n      notificationElement.textContent = 'New password must be at least 8 characters long.';\n      return;\n    }\n\n    try {\n      // Get the currently signed-in user\n      const user = firebase.auth().currentUser;\n\n      // Re-authenticate the user with their current password before updating\n      const credential = firebase.auth.EmailAuthProvider.credential(user.email, currentPassword);\n      await user.reauthenticateWithCredential(credential);\n\n      // Update the user's password with the new one\n      await user.updatePassword(newPassword);\n\n      notificationElement.textContent = 'Password changed successfully!';\n      currentPasswordInput.value = ''; // Clear password fields after successful change\n      newPasswordInput.value = '';\n      repeatNewPasswordInput.value = '';\n    } catch (error) {\n        if (error.code === 'auth/internal-error') {\n        notificationElement.textContent = 'Invalid current password.';\n      } else {\n        console.error('Error changing password:', error);\n        notificationElement.textContent = 'An error occurred. Please try again.';\n      }\n    }\n  });\n  </script>")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		if !templ_7745c5c3_IsBuffer {
+			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteTo(templ_7745c5c3_W)
+		}
+		return templ_7745c5c3_Err
+	})
+}

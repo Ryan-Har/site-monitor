@@ -26,7 +26,8 @@ templ SettingsAccount(currentName string) {
             @partials.ChangeFullNameCard(currentName)
         </div>
         <div class="row m-4">
-            @partials.ChangeEmailCard()
+            @partials.ChangePasswordCard()
+            @partials.ChangePasswordJS()
         </div>
         <div class="row m-4">
             @partials.ToggleThemeCard()

@@ -34,7 +34,7 @@ templ ChangeFullNameCard(currentName string) {
             <div class="card-body">
                 <h5 class="card-title">Change Name</h5>
                 <hr></hr>
-                <form action="/settings/account/change-full-name" method="post">
+                <form action="/settings/account/changeName" method="post">
                     <div class="mb-3">
                         <label for="name" class="form-label">Full Name</label>
                         <input type="text" class="form-control" id="name" name="name" value={ currentName } required></input>
@@ -48,21 +48,26 @@ templ ChangeFullNameCard(currentName string) {
     </div>
 }
 
-templ ChangeEmailCard() {
+templ ChangePasswordCard() {
     <div class="container-md">
         <div class="card">
             <div class="card-body">
-                <h5 class="card-title">Change Email</h5>
+                <h5 class="card-title">Change Password</h5>
                 <hr></hr>
-                <form action="/settings/account/change-email" method="post">
+                <form id="changePasswordForm">
                     <div class="mb-3">
-                        <label for="email" class="form-label">New Email</label>
-                        <input type="email" class="form-control" id="email" name="email" required></input>
+                        <label for="currentPassword" class="form-label">Current Password</label>
+                        <input type="password" class="form-control" id="currentPassword" name="currentPassword" required></input>
                     </div>
                     <div class="mb-3">
-                        <label for="password" class="form-label">Password</label>
-                        <input type="password" class="form-control" id="password" name="password" required></input>
+                        <label for="newPassword" class="form-label">Password</label>
+                        <input type="password" class="form-control" id="newPassword" name="newPassword" required></input>
                     </div>
+                    <div class="mb-3">
+                        <label for="repeatnewPassword" class="form-label">Password</label>
+                        <input type="password" class="form-control" id="repeatNewPassword" name="repeatNewPassword" required></input>
+                    </div>
+                    <p id="passwordNotification"></p>
                     <div class="text-end">
                         <button type="submit" class="btn btn-primary">Change Email</button>
                     </div>

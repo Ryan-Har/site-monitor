@@ -37,6 +37,7 @@ func main() {
 	http.HandleFunc("POST /verifylogin", fb.VerifyLogin)
 	http.HandleFunc("POST /updateauthcookie", fb.UpdateAuthCookie)
 	http.Handle("DELETE /monitors/{monitorid}", fb.AuthMiddleware(http.HandlerFunc(handlers.NewDeleteMonitorByID(*dbh).ServeHTTP)))
+	//http.Handle("POST /settings/account/changeName", fb.AuthMiddleware(http.HandlerFunc(handlers.(*dbh).ServeHTTP)))
 
 	//forms
 	http.Handle("POST /monitors/new", fb.AuthMiddleware(http.HandlerFunc(handlers.NewPostFormHandler(*dbh).NewMonitorForm)))
