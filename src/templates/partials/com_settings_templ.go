@@ -94,20 +94,20 @@ func ChangeFullNameCard(currentName string) templ.Component {
 			templ_7745c5c3_Var2 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"container-md\"><div class=\"card\"><div class=\"card-body\"><h5 class=\"card-title\">Change Name</h5><hr><form action=\"/settings/account/changeName\" method=\"post\"><div class=\"mb-3\"><label for=\"name\" class=\"form-label\">Full Name</label> <input type=\"text\" class=\"form-control\" id=\"name\" name=\"name\" value=\"")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"container-md\"><div class=\"card\"><div class=\"card-body\"><h5 class=\"card-title\">Change Name</h5><hr><form id=\"changeDisplayNameForm\"><div class=\"mb-3\"><label for=\"fullName\" class=\"form-label\">Full Name</label> <input type=\"text\" class=\"form-control\" id=\"fullName\" name=\"fullName\" value=\"")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
 		var templ_7745c5c3_Var3 string
 		templ_7745c5c3_Var3, templ_7745c5c3_Err = templ.JoinStringErrs(currentName)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/partials/com_settings.templ`, Line: 40, Col: 105}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/partials/com_settings.templ`, Line: 40, Col: 113}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var3))
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" required></div><div class=\"text-end\"><button type=\"submit\" class=\"btn btn-primary\">Change Name</button></div></form></div></div></div>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("\" required></div><p id=\"changeDisplayNameNotification\"></p><div class=\"text-end\"><button type=\"submit\" class=\"btn btn-primary\">Change Name</button></div></form></div></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -131,7 +131,7 @@ func ChangePasswordCard() templ.Component {
 			templ_7745c5c3_Var4 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"container-md\"><div class=\"card\"><div class=\"card-body\"><h5 class=\"card-title\">Change Password</h5><hr><form id=\"changePasswordForm\"><div class=\"mb-3\"><label for=\"currentPassword\" class=\"form-label\">Current Password</label> <input type=\"password\" class=\"form-control\" id=\"currentPassword\" name=\"currentPassword\" required></div><div class=\"mb-3\"><label for=\"newPassword\" class=\"form-label\">Password</label> <input type=\"password\" class=\"form-control\" id=\"newPassword\" name=\"newPassword\" required></div><div class=\"mb-3\"><label for=\"repeatnewPassword\" class=\"form-label\">Password</label> <input type=\"password\" class=\"form-control\" id=\"repeatNewPassword\" name=\"repeatNewPassword\" required></div><p id=\"passwordNotification\"></p><div class=\"text-end\"><button type=\"submit\" class=\"btn btn-primary\">Change Email</button></div></form></div></div></div>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"container-md\"><div class=\"card\"><div class=\"card-body\"><h5 class=\"card-title\">Change Password</h5><hr><form id=\"changePasswordForm\"><div class=\"mb-3\"><label for=\"currentPassword\" class=\"form-label\">Current Password</label> <input type=\"password\" class=\"form-control\" id=\"currentPassword\" name=\"currentPassword\" required></div><div class=\"mb-3\"><label for=\"newPassword\" class=\"form-label\">Password</label> <input type=\"password\" class=\"form-control\" id=\"newPassword\" name=\"newPassword\" required></div><div class=\"mb-3\"><label for=\"repeatNewPassword\" class=\"form-label\">Repeat Password</label> <input type=\"password\" class=\"form-control\" id=\"repeatNewPassword\" name=\"repeatNewPassword\" required></div><p id=\"passwordNotification\"></p><div class=\"text-end\"><button type=\"submit\" class=\"btn btn-primary\">Change Email</button></div></form></div></div></div>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

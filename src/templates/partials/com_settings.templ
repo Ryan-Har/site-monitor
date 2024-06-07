@@ -34,11 +34,12 @@ templ ChangeFullNameCard(currentName string) {
             <div class="card-body">
                 <h5 class="card-title">Change Name</h5>
                 <hr></hr>
-                <form action="/settings/account/changeName" method="post">
+                <form id="changeDisplayNameForm">
                     <div class="mb-3">
-                        <label for="name" class="form-label">Full Name</label>
-                        <input type="text" class="form-control" id="name" name="name" value={ currentName } required></input>
+                        <label for="fullName" class="form-label">Full Name</label>
+                        <input type="text" class="form-control" id="fullName" name="fullName" value={ currentName } required></input>
                     </div>
+                    <p id="changeDisplayNameNotification"></p>
                     <div class="text-end">
                         <button type="submit" class="btn btn-primary">Change Name</button>
                     </div>
@@ -64,7 +65,7 @@ templ ChangePasswordCard() {
                         <input type="password" class="form-control" id="newPassword" name="newPassword" required></input>
                     </div>
                     <div class="mb-3">
-                        <label for="repeatnewPassword" class="form-label">Password</label>
+                        <label for="repeatNewPassword" class="form-label">Repeat Password</label>
                         <input type="password" class="form-control" id="repeatNewPassword" name="repeatNewPassword" required></input>
                     </div>
                     <p id="passwordNotification"></p>

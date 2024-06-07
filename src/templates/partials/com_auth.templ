@@ -126,13 +126,45 @@ templ MonitorAuthState() {
   </script>
 }
 
+templ ChangeDisplayNameJS() {
+  <script>
+  const changeDisplayNameForm = document.getElementById("changeDisplayNameForm")
+  const fullNameInput = document.getElementById("fullName")
+  const displayNameNotificationElement = document.getElementById("changeDisplayNameNotification")
+
+  changeDisplayNameForm.addEventListener('submit', async (event) => {
+  event.preventDefault();
+
+  const newDisplayName = fullNameInput.value;
+
+  // Clear any previous notifications
+  displayNameNotificationElement.textContent = '';
+
+  try {
+    // Get the currently signed-in user
+    const user = firebase.auth().currentUser;
+
+    // Update the user's display name (without re-authentication)
+    const profileUpdates = { displayName: newDisplayName };
+    await user.updateProfile(profileUpdates);
+
+    displayNameNotificationElement.textContent = 'Display name changed successfully!';
+    fullNameInput.value = ''; // Clear display name field after success
+  } catch (error) {
+    console.error('Error changing display name:', error);
+    displayNameNotificationElement.textContent = 'An error occurred. Please try again.';
+  }
+});
+  </script>
+}
+
 templ ChangePasswordJS() {
   <script>
   const changePasswordForm = document.getElementById("changePasswordForm")
   const currentPasswordInput = document.getElementById("currentPassword")
   const newPasswordInput = document.getElementById("newPassword")
   const repeatNewPasswordInput = document.getElementById("repeatNewPassword")
-  const notificationElement = document.getElementById("passwordNotification")
+  const passwordNotificationElement = document.getElementById("passwordNotification")
 
   changePasswordForm.addEventListener('submit', async (event) => {
     event.preventDefault();
@@ -142,14 +174,14 @@ templ ChangePasswordJS() {
     const repeatPassword = repeatNewPasswordInput.value;
 
     // Clear any previous notifications
-    notificationElement.textContent = '';
+    passwordNotificationElement.textContent = '';
 
     // Validate passwords
     if (newPassword !== repeatPassword) {
-      notificationElement.textContent = 'New passwords do not match.';
+      passwordNotificationElement.textContent = 'New passwords do not match.';
       return;
     } else if (newPassword.length < 8) {
-      notificationElement.textContent = 'New password must be at least 8 characters long.';
+      passwordNotificationElement.textContent = 'New password must be at least 8 characters long.';
       return;
     }
 
@@ -164,16 +196,16 @@ templ ChangePasswordJS() {
       // Update the user's password with the new one
       await user.updatePassword(newPassword);
 
-      notificationElement.textContent = 'Password changed successfully!';
+      passwordNotificationElement.textContent = 'Password changed successfully!';
       currentPasswordInput.value = ''; // Clear password fields after successful change
       newPasswordInput.value = '';
       repeatNewPasswordInput.value = '';
     } catch (error) {
         if (error.code === 'auth/internal-error') {
-        notificationElement.textContent = 'Current password incorrect.';
+        passwordNotificationElement.textContent = 'Current password incorrect.';
       } else {
         console.error('Error changing password:', error);
-        notificationElement.textContent = 'An error occurred. Please try again.';
+        passwordNotificationElement.textContent = 'An error occurred. Please try again.';
       }
     }
   });

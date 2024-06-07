@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"github.com/Ryan-Har/site-monitor/src/templates"
 	"github.com/Ryan-Har/site-monitor/src/templates/partials"
 	"log/slog"
@@ -26,12 +27,16 @@ func NewGetSecuritySettingsHandler() *GetSecuritySettingsHandler {
 }
 
 func (h *GetAccountSettingsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	nav := partials.SettingsNavBar("account")
-	acc := templates.SettingsAccount("Ryan Harris")
 	userInfo, err := GetUserInfoFromContext(r.Context())
 	if err != nil {
-		slog.Warn("error getting user info from context")
+		slog.Error("error getting user info from context for newmonitor form post")
+		w.WriteHeader(http.StatusForbidden)
+		fmt.Fprintf(w, "error getting user info from context, reauthentication needed")
+		return
 	}
+
+	nav := partials.SettingsNavBar("account")
+	acc := templates.SettingsAccount(userInfo.Name)
 
 	c := templates.Settings(nav, acc, userInfo)
 	err = templates.Layout("Settings", c).Render(r.Context(), w)
@@ -43,12 +48,17 @@ func (h *GetAccountSettingsHandler) ServeHTTP(w http.ResponseWriter, r *http.Req
 }
 
 func (h *GetNotificationSettingsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	nav := partials.SettingsNavBar("notifications")
-	not := templates.SettingsNotifications()
 	userInfo, err := GetUserInfoFromContext(r.Context())
 	if err != nil {
-		slog.Warn("error getting user info from context")
+		slog.Error("error getting user info from context for newmonitor form post")
+		w.WriteHeader(http.StatusForbidden)
+		fmt.Fprintf(w, "error getting user info from context, reauthentication needed")
+		return
 	}
+
+	nav := partials.SettingsNavBar("notifications")
+	not := templates.SettingsNotifications()
+
 	c := templates.Settings(nav, not, userInfo)
 
 	err = templates.Layout("Settings", c).Render(r.Context(), w)
@@ -60,12 +70,16 @@ func (h *GetNotificationSettingsHandler) ServeHTTP(w http.ResponseWriter, r *htt
 }
 
 func (h *GetSecuritySettingsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	nav := partials.SettingsNavBar("security")
-	sec := templates.SettingsSecurity()
 	userInfo, err := GetUserInfoFromContext(r.Context())
 	if err != nil {
-		slog.Warn("error getting user info from context")
+		slog.Error("error getting user info from context for newmonitor form post")
+		w.WriteHeader(http.StatusForbidden)
+		fmt.Fprintf(w, "error getting user info from context, reauthentication needed")
+		return
 	}
+
+	nav := partials.SettingsNavBar("security")
+	sec := templates.SettingsSecurity()
 
 	c := templates.Settings(nav, sec, userInfo)
 	err = templates.Layout("Settings", c).Render(r.Context(), w)
