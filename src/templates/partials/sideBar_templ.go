@@ -129,7 +129,7 @@ func sideBarUserSection(name string) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</span> <i class=\"bi bi-three-dots\" data-bs-toggle=\"dropdown\" aria-expanded=\"false\"></i><ul class=\"dropdown-menu\" aria-labelledby=\"dropdownUser1\"><li><a class=\"dropdown-item\" href=\"/settings/account\">Settings</a></li><li><hr class=\"dropdown-divider\"></li><li><a class=\"dropdown-item\" href=\"#\">Sign out</a></li></ul></div><style>\n        .initials {\n    display: inline-block;\n    width: 40px;\n    height: 40px;\n    text-align: center;\n\n    font-size: 1.5rem;\n    font-weight: bold;\n    }\n    </style>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</span> <i class=\"bi bi-three-dots\" data-bs-toggle=\"dropdown\" aria-expanded=\"false\"></i><ul class=\"dropdown-menu\" aria-labelledby=\"dropdownUser1\"><li><a class=\"dropdown-item\" href=\"/settings/account\">Settings</a></li><li><hr class=\"dropdown-divider\"></li><li><a class=\"dropdown-item\" onclick=\"logout()\" href=\"/login\">Sign out</a></li></ul></div><style>\n        .initials {\n    display: inline-block;\n    width: 40px;\n    height: 40px;\n    text-align: center;\n\n    font-size: 1.5rem;\n    font-weight: bold;\n    }\n    </style>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}

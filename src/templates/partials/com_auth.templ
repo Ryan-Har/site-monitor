@@ -123,6 +123,13 @@ templ MonitorAuthState() {
         console.error('Error: ', errorCode, errorMessage);
       });
     };
+
+  function logout() {
+    firebase.auth().signOut().then(() => {
+    }, (error) => {
+    console.log("error occured logging out")
+    });
+  }
   </script>
 }
 
