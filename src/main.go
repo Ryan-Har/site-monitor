@@ -22,6 +22,7 @@ func main() {
 	//serve html
 	http.HandleFunc("GET /signup", handlers.NewGetSignupHandler().ServeHTTP)
 	http.HandleFunc("GET /login", handlers.NewGetLoginHandler().ServeHTTP)
+	http.HandleFunc("GET /forgottenpassword", handlers.NewGetResetPasswordHandler().ServeHTTP)
 	http.Handle("GET /monitors", fb.AuthMiddleware(http.HandlerFunc(handlers.NewGetMonitorOverviewHandler(*dbh).ServeHTTP)))
 	http.Handle("GET /monitors/new", fb.AuthMiddleware(http.HandlerFunc(handlers.NewGetMonitorFormHandler().ServeHTTP)))
 	http.Handle("GET /monitors/{monitorid}", fb.AuthMiddleware(http.HandlerFunc(handlers.NewGetMonitorByID(*dbh).ServeHTTP)))
@@ -37,7 +38,6 @@ func main() {
 	http.HandleFunc("POST /verifylogin", fb.VerifyLogin)
 	http.HandleFunc("POST /updateauthcookie", fb.UpdateAuthCookie)
 	http.Handle("DELETE /monitors/{monitorid}", fb.AuthMiddleware(http.HandlerFunc(handlers.NewDeleteMonitorByID(*dbh).ServeHTTP)))
-
 	//forms
 	http.Handle("POST /monitors/new", fb.AuthMiddleware(http.HandlerFunc(handlers.NewPostFormHandler(*dbh).NewMonitorForm)))
 	//form validations
