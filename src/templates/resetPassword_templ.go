@@ -10,24 +10,7 @@ import "context"
 import "io"
 import "bytes"
 
-import (
-//"github.com/Ryan-Har/site-monitor/src/templates/partials"
-)
-
-//   <div class="container d-flex flex-column align-items-center justify-content-center h-50 mt-5">
-//   <div class="col-7 mx-auto text-center">
-//     <h3 class="mb-4">Forgotten Password?</h3>
-//     <p class="fs-8 text-secondary mb-12">Please enter your email to receive a forgotten password link</p>
-//     <form id="passwordResetForm" hx-post="/forgottenpassword" hx-include="this" hx-target="#passwordResetMessage" hx-swap="innerHTML">
-//       <div class="mb-2">
-//         <label for="email" class="form-label"></label>
-//         <input class="form-control" id="email" name="email" type="email" placeholder="Email address"></input>
-//       </div>
-//       <p id="passwordResetMessage"></p>
-//       <button class="btn w-100 mb-8 btn-primary shadow">Send Reset link</button>
-//     </form>
-//   </div>
-// </div>
+import ()
 
 func ResetPassword() templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
