@@ -85,41 +85,19 @@ func (h *GetMonitorOverviewHandler) ServeHTTP(w http.ResponseWriter, r *http.Req
 
 	cards := make([]models.MonitorCardGenerationModel, 0, len(usersMonitorIDs))
 	for _, monitorId := range usersMonitorIDs {
-		var currentMonitor models.MonitorCardGenerationModel
-
-		name := fmt.Sprintf("%s: %s", userMonitorInfoMap[monitorId].Type, userMonitorInfoMap[monitorId].URL)
-		interval := userMonitorInfoMap[monitorId].IntervalSecs
-
-		currentMonitor.MonitorID = monitorId
-		currentMonitor.Name = name
-		currentMonitor.RefreshIntervalSecs = interval
+		var card models.MonitorCardGenerationModel
 
 		// if not ok then no checks have happened yet
 		monitorIdResults, ok := userMonitorResultsMap[monitorId]
 		if ok {
-			lastResult := monitorIdResults[len(monitorIdResults)-1]
-			isLastUp := lastResult.IsUp == 1
-			currentMonitor.Up = isLastUp
-
-			var lastChangeSeconds int
-			for i := len(monitorIdResults) - 1; i >= 0; i-- {
-				if (monitorIdResults[i].IsUp == 1) != isLastUp {
-					lastChangeSeconds = lastResult.RunTimeEpoch - monitorIdResults[i].RunTimeEpoch
-					break
-				}
-			}
-			currentMonitor.LastChangeSecs = lastChangeSeconds
+			card = generateMonitorCardGenerationModel(userMonitorInfoMap[monitorId], monitorIdResults)
+		} else {
+			card.MonitorID = monitorId
+			card.Name = formatMonitorName(userMonitorInfoMap[monitorId].Type, userMonitorInfoMap[monitorId].URL)
+			card.RefreshIntervalSecs = userMonitorInfoMap[monitorId].IntervalSecs
 		}
-		cards = append(cards, currentMonitor)
+		cards = append(cards, card)
 	}
-
-	// for k, v := range userMonitorInfoMap {
-	// 	slog.Info("infomap: ", "id", k, "info", v)
-	// }
-
-	// for k, v := range userMonitorResultsMap {
-	// 	slog.Info("resultsmap: ", "id", k, "results", v)
-	// }
 
 	c := templates.MonitorOverview(userInfo, cards...)
 
@@ -179,15 +157,47 @@ func (h *GetMonitorFormHandler) ServeFormContent(w http.ResponseWriter, r *http.
 }
 
 func (h *GetMonitorByID) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	id := r.PathValue("monitorid")
-	if id == "" {
+	userInfo, err := GetUserInfoFromContext(r.Context())
+	if err != nil {
+		slog.Error("error getting user info from context for get monitor by id")
+		w.WriteHeader(http.StatusForbidden)
+		fmt.Fprintf(w, "error getting user info from context, reauthentication needed")
+		return
+	}
+
+	idStr := r.PathValue("monitorid")
+	if idStr == "" {
 		http.Error(w, "monitorid not found in query string", http.StatusBadRequest)
 		return
 	}
-	if _, err := fmt.Fprintf(w, "Getting monitor with id: %s", id); err != nil {
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		fmt.Fprintf(w, "error converting monitor id to int")
+		return
+	}
+
+	monitorOwnerCheckResponse, err := h.dbHandler.GetMonitors(database.ByMonitorIds{Ids: []int{id}})
+	if err != nil || len(monitorOwnerCheckResponse) < 1 {
+		fmt.Fprintf(w, "error getting monitor with id %d from database", id)
+		return
+	}
+
+	if monitorOwnerCheckResponse[0].UUID != userInfo.UUID {
+		http.Error(w, "monitor not owned by current user", http.StatusForbidden)
+		return
+	}
+
+	c := templates.GetSingleMonitor(userInfo)
+
+	err = templates.Layout("Monitor", c).Render(r.Context(), w)
+	if err != nil {
+		slog.Error("error while rendering single template", "err", err.Error())
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+
+	return
 }
 
 func (h *DeleteMonitorByID) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -215,4 +225,30 @@ func unixTimeNow() int {
 
 func unixTime7DaysAgo() int {
 	return int(time.Now().Add(-7 * 24 * time.Hour).Unix())
+}
+
+func generateMonitorCardGenerationModel(monitor database.Monitor, monitorResult []database.MonitorResult) models.MonitorCardGenerationModel {
+	var respCard models.MonitorCardGenerationModel
+
+	respCard.MonitorID = monitor.MonitorID
+	respCard.Name = formatMonitorName(monitor.Type, monitor.URL)
+	respCard.RefreshIntervalSecs = monitor.IntervalSecs
+	if len(monitorResult) < 1 {
+		return respCard
+	}
+
+	lastResult := monitorResult[len(monitorResult)-1]
+	respCard.Up = lastResult.IsUp == 1
+	for i := len(monitorResult) - 1; i >= 0; i-- {
+		if monitorResult[i].IsUp != lastResult.IsUp {
+			respCard.LastChangeSecs = lastResult.RunTimeEpoch - monitorResult[i].RunTimeEpoch
+			break
+		}
+	}
+	respCard.LastCheckSecs = unixTimeNow() - lastResult.RunTimeEpoch
+	return respCard
+}
+
+func formatMonitorName(mType string, mUrl string) string {
+	return fmt.Sprintf("%s: %s", mType, mUrl)
 }
