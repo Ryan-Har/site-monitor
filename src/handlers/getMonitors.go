@@ -93,7 +93,8 @@ func (h *GetMonitorOverviewHandler) ServeHTTP(w http.ResponseWriter, r *http.Req
 			card = generateMonitorCardGenerationModel(userMonitorInfoMap[monitorId], monitorIdResults)
 		} else {
 			card.MonitorID = monitorId
-			card.Name = formatMonitorName(userMonitorInfoMap[monitorId].Type, userMonitorInfoMap[monitorId].URL)
+			card.MType = userMonitorInfoMap[monitorId].Type
+			card.MUrl = userMonitorInfoMap[monitorId].URL
 			card.RefreshIntervalSecs = userMonitorInfoMap[monitorId].IntervalSecs
 		}
 		cards = append(cards, card)
@@ -231,7 +232,8 @@ func generateMonitorCardGenerationModel(monitor database.Monitor, monitorResult 
 	var respCard models.MonitorCardGenerationModel
 
 	respCard.MonitorID = monitor.MonitorID
-	respCard.Name = formatMonitorName(monitor.Type, monitor.URL)
+	respCard.MType = monitor.Type
+	respCard.MUrl = monitor.URL
 	respCard.RefreshIntervalSecs = monitor.IntervalSecs
 	if len(monitorResult) < 1 {
 		return respCard
@@ -247,8 +249,4 @@ func generateMonitorCardGenerationModel(monitor database.Monitor, monitorResult 
 	}
 	respCard.LastCheckSecs = unixTimeNow() - lastResult.RunTimeEpoch
 	return respCard
-}
-
-func formatMonitorName(mType string, mUrl string) string {
-	return fmt.Sprintf("%s: %s", mType, mUrl)
 }

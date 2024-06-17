@@ -71,7 +71,7 @@ templ SingleMonitor(info models.MonitorCardGenerationModel) {
                     }
                     </div>
                     <div class="col d-flex flex-column">
-                        <div class="col align-self-start"> { info.Name } </div>
+                        <div class="col align-self-start"> { info.Name() } </div>
                         <div class="col align-self-start fw-light lh-sm" style="font-size: 0.7rem;">
                         if info.Up {
                             { "up " }
