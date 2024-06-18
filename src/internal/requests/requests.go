@@ -71,6 +71,7 @@ func Send(req ...Requests) []Response {
 	var wg sync.WaitGroup
 	for _, item := range organised {
 		wg.Add(1)
+
 		go item.sendRequest(&wg, respChan)
 	}
 	wg.Wait()
@@ -151,6 +152,7 @@ func (req makeRequest) sendRequest(wg *sync.WaitGroup, rchan chan<- makeRequestR
 	switch req.rtype {
 	case RequestTypeICMP:
 		check, err := sendICMPRequest(req)
+		fmt.Println("response from icmp", check, err)
 		resp := makeRequestResponseWithErr{
 			makeRequestResponse: check,
 			err:                 err,
@@ -165,6 +167,7 @@ func (req makeRequest) sendRequest(wg *sync.WaitGroup, rchan chan<- makeRequestR
 		rchan <- resp
 	case RequestTypeHTTP:
 		check, err := sendHTTPRequest(req)
+		fmt.Println("response from http", check, err)
 		resp := makeRequestResponseWithErr{
 			makeRequestResponse: check,
 			err:                 err,
@@ -195,13 +198,17 @@ func sendICMPRequest(mr makeRequest) (makeRequestResponse, error) {
 			RunTime: runTime,
 		},
 	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), mr.maxTimeout)
+	defer cancel()
+
 	pinger, err := probing.NewPinger(mr.url)
 	if err != nil {
 		return resp, fmt.Errorf("error creating pinger for %v: %v", mr.url, err.Error())
 	}
 	pinger.Count = 1
 
-	err = pinger.Run() // Blocks until finished.
+	err = pinger.RunWithContext(ctx) // Blocks until finished.
 	if err != nil {
 		return resp, fmt.Errorf("error pinging %v: %v", mr.url, err.Error())
 	}
