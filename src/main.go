@@ -26,6 +26,7 @@ func main() {
 	http.Handle("GET /monitors", fb.AuthMiddleware(http.HandlerFunc(handlers.NewGetMonitorOverviewHandler(*dbh).ServeHTTP)))
 	http.Handle("GET /monitors/new", fb.AuthMiddleware(http.HandlerFunc(handlers.NewGetMonitorFormHandler().ServeHTTP)))
 	http.Handle("GET /monitors/{monitorid}", fb.AuthMiddleware(http.HandlerFunc(handlers.NewGetMonitorByID(*dbh).ServeHTTP)))
+
 	// http.Handle("GET /monitors/{monitorid}/edit", fb.AuthMiddleware(http.HandlerFunc(handlers.NewGetMonitorByID().ServeHTTP)))
 	http.HandleFunc("GET /monitors/getCreateFormInfo", handlers.NewGetMonitorFormHandler().ServeFormContent)
 	http.Handle("GET /maintenance", fb.AuthMiddleware(http.HandlerFunc(handlers.NewGetMaintenanceHandler().ServeHTTP)))
@@ -33,6 +34,9 @@ func main() {
 	http.Handle("GET /settings/account", fb.AuthMiddleware(http.HandlerFunc(handlers.NewGetAccountSettingsHandler().ServeHTTP)))
 	http.Handle("GET /settings/notifications", fb.AuthMiddleware(http.HandlerFunc(handlers.NewGetNotificationSettingsHandler().ServeHTTP)))
 	http.Handle("GET /settings/security", fb.AuthMiddleware(http.HandlerFunc(handlers.NewGetSecuritySettingsHandler().ServeHTTP)))
+
+	//serve json
+	http.Handle("GET /monitors/{monitorid}/responsetime", fb.AuthMiddleware(http.HandlerFunc(handlers.NewGetMonitorByID(*dbh).ServeResponseTimes)))
 
 	//perform actions
 	http.HandleFunc("POST /verifylogin", fb.VerifyLogin)

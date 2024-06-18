@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"encoding/json"
 	"fmt"
 	"log/slog"
 	"net/http"
@@ -189,7 +190,15 @@ func (h *GetMonitorByID) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	c := templates.GetSingleMonitor(userInfo)
+	checkResults, err := h.dbHandler.GetMonitorResults(database.ByMonitorIds{Ids: []int{id}})
+	if err != nil {
+		fmt.Fprintf(w, "error getting monitor results with id %d from database", id)
+		return
+	}
+
+	monitorInfo := generateMonitorCardGenerationModel(monitorOwnerCheckResponse[0], checkResults)
+
+	c := templates.GetSingleMonitor(userInfo, monitorInfo, checkResults)
 
 	err = templates.Layout("Monitor", c).Render(r.Context(), w)
 	if err != nil {
@@ -198,7 +207,6 @@ func (h *GetMonitorByID) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	return
 }
 
 func (h *DeleteMonitorByID) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -249,4 +257,76 @@ func generateMonitorCardGenerationModel(monitor database.Monitor, monitorResult 
 	}
 	respCard.LastCheckSecs = unixTimeNow() - lastResult.RunTimeEpoch
 	return respCard
+}
+
+type dateResponse struct {
+	Date         string `json:"date"`
+	ResponseTime int    `json:"responsetime"`
+}
+
+func (h *GetMonitorByID) ServeResponseTimes(w http.ResponseWriter, r *http.Request) {
+	userInfo, err := GetUserInfoFromContext(r.Context())
+	if err != nil {
+		slog.Error("error getting user info from context for get monitor by id")
+		w.WriteHeader(http.StatusForbidden)
+		fmt.Fprintf(w, "error getting user info from context, reauthentication needed")
+		return
+	}
+
+	idStr := r.PathValue("monitorid")
+	if idStr == "" {
+		http.Error(w, "monitorid not found in query string", http.StatusBadRequest)
+		return
+	}
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		fmt.Fprintf(w, "error converting monitor id to int")
+		return
+	}
+
+	monitorOwnerCheckResponse, err := h.dbHandler.GetMonitors(database.ByMonitorIds{Ids: []int{id}})
+	if err != nil || len(monitorOwnerCheckResponse) < 1 {
+		fmt.Fprintf(w, "error getting monitor with id %d from database", id)
+		return
+	}
+
+	if monitorOwnerCheckResponse[0].UUID != userInfo.UUID {
+		http.Error(w, "monitor not owned by current user", http.StatusForbidden)
+		return
+	}
+
+	checkResults, err := h.dbHandler.GetMonitorResults(database.ByMonitorIds{Ids: []int{id}},
+		database.BetweenRunTime{
+			MinEpoch: unixTime7DaysAgo(),
+			MaxEpoch: unixTimeNow(),
+		})
+	if err != nil {
+		fmt.Fprintf(w, "error getting monitor results with id %d from database", id)
+		return
+	}
+
+	dateResponseSlice := make([]dateResponse, 0, len(checkResults))
+
+	for _, check := range checkResults {
+		runTime64 := int64(check.RunTimeEpoch)
+		d := dateResponse{
+			Date:         time.Unix(runTime64, 0).Format("2006-01-02 15:04:05"),
+			ResponseTime: check.ResponseTimeMs,
+		}
+		dateResponseSlice = append(dateResponseSlice, d)
+	}
+
+	jsonData, err := json.Marshal(dateResponseSlice)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+
+	if _, err := w.Write(jsonData); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 }

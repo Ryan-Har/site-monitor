@@ -58,6 +58,11 @@ func (h *PostFormHandler) NewMonitorForm(w http.ResponseWriter, r *http.Request)
 
 	monitor.UUID = userInfo.UUID
 
+	//default to 10 seconds for pings to prevent infinite waits later on
+	if monitor.Type == "ICMP" && monitor.TimeoutSecs == 0 {
+		monitor.TimeoutSecs = 10
+	}
+
 	if err = h.dbHandler.AddMonitors(*monitor); err != nil {
 		slog.Error("error adding monitor to db", "monitor", monitor, "err", err)
 		w.WriteHeader(http.StatusInternalServerError)

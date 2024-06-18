@@ -3,6 +3,8 @@ package partials
 import (
     "strconv"
     "github.com/Ryan-Har/site-monitor/src/models"
+    "github.com/Ryan-Har/site-monitor/src/internal/database"
+    "time"
     "fmt"
 )
 
@@ -83,7 +85,6 @@ templ SingleMonitor(info models.MonitorCardGenerationModel) {
                         } else {
                             { secondsToHumanReadable(info.LastChangeSecs) }
                         }
-                        
                         </div>
                     </div>
                     <div class="col-4">
@@ -336,4 +337,141 @@ func getSampleNotifications() map[int]string {
         2: "Webhook1",
         3: "Slack",
     }
+}
+
+templ SingleMonitorTitle(statusUp bool, url string, mType string) {
+    <div class="row mt-2 mb-4 mx-3">
+        <div class="col-1 d-flex justify-content-center pe-0">
+        if statusUp {
+            <i class="bi bi-arrow-up-circle text-success" style="font-size: 1.5rem; -webkit-text-stroke: 1.5px;"></i>
+        } else {
+            <i class="bi bi-arrow-down-circle text-danger" style="font-size: 1.5rem; -webkit-text-stroke: 1.5px;"></i>
+        }
+        </div>
+        <div class="col d-flex flex-column">
+            <div class="col align-self-start"> <strong>{ url }</strong> </div>
+            <div class="col align-self-start fw-light lh-sm" style="font-size: 0.7rem;">
+                { mType } monitor for { url }
+            </div>
+        </div>
+    </div>
+}
+
+templ CurrentStatusCard(up bool, lastChangeSec int) {
+    <div class="col col-6">
+        <div class="card bg-dark-subtle">
+            <div class="card-body">
+                    <div class="card-title">
+                    Current Status
+                    </div>
+
+                    if up {
+                        <p><span class="green"> Up </span> since 
+                        if lastChangeSec == 0 {
+                            monitor began
+                        } else {
+                            { dateTimeXSecondsAgo(lastChangeSec) }
+                        }
+                        </p>
+                    } else {
+                        <p><span class="red"> Down </span> since 
+                        if lastChangeSec == 0 {
+                            monitor began
+                        } else {
+                            { dateTimeXSecondsAgo(lastChangeSec) }
+                        }
+                        </p>
+                    }
+            </div>
+        </div>
+    </div>
+}
+
+func dateTimeXSecondsAgo(secs int) string {
+    return time.Now().Add(- time.Duration(secs) * time.Second).Format("2006-01-02 15:04:05")
+}
+
+templ LastCheckCard(lastCheckSecs int, checkInterval int) {
+    <div class="col col-6">
+        <div class="card bg-dark-subtle">
+            <div class="card-body">
+                    <div class="card-title">
+                    Last Check
+                    </div>
+                    if lastCheckSecs == 0 {
+                        No Check Yet
+                    } else {
+                        { dateTimeXSecondsAgo(lastCheckSecs) }
+                    }
+                    <p>
+                    checked every { secondsToHumanReadable(checkInterval) }
+                    </p>    
+            </div>
+        </div>
+    </div>
+}
+
+templ ResponseTimeGraph(checks []database.MonitorResult) {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+
+    <div class="col">
+        <div class="card bg-dark-subtle">
+            <div class="card-body">
+                    <div class="card-title">
+                    Response time
+                    </div>
+                    <canvas id="myChart">
+                    </canvas>
+
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const ctx = document.getElementById('myChart').getContext('2d');
+        const currentUrl = window.location.href;
+        const responseTimeEndpoint = currentUrl + '/responsetime';
+    
+        fetch(responseTimeEndpoint)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('unable to get response time information')
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log(data)
+                const dateList = data.map(item => item.date)
+                const responseList = data.map(item => item.responsetime)
+                const myChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: dateList,
+                    datasets: [{
+                    label: 'response time (ms)',
+                    data: responseList,
+                    //backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    borderColor: 'green',
+                    borderWidth: 1
+                    }]
+                },
+                options: {
+                    scales: {
+                    yAxes: [{
+                        ticks: {
+                        beginAtZero: true
+                        }
+                    }]
+                    }
+                }
+                });
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+
+        
+
+    </script>
 }

@@ -11,6 +11,7 @@ import "io"
 import "bytes"
 
 import (
+	"github.com/Ryan-Har/site-monitor/src/internal/database"
 	"github.com/Ryan-Har/site-monitor/src/models"
 	"github.com/Ryan-Har/site-monitor/src/templates/partials"
 )
@@ -109,7 +110,7 @@ func NewMonitorForm(userInfo models.UserInfo) templ.Component {
 	})
 }
 
-func GetSingleMonitor(userInfo models.UserInfo) templ.Component {
+func GetSingleMonitor(userInfo models.UserInfo, monInfo models.MonitorCardGenerationModel, monChecks []database.MonitorResult) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
 		if !templ_7745c5c3_IsBuffer {
@@ -130,7 +131,35 @@ func GetSingleMonitor(userInfo models.UserInfo) templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"col py-3 offset-2 offset-sm-3 offset-xl-2\"></div></div></div>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"col py-3 offset-2 offset-sm-3 offset-xl-2\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = partials.SingleMonitorTitle(monInfo.Up, monInfo.MUrl, monInfo.MType).Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<div class=\"row my-2 mx-3\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = partials.CurrentStatusCard(monInfo.Up, monInfo.LastChangeSecs).Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = partials.LastCheckCard(monInfo.LastCheckSecs, monInfo.RefreshIntervalSecs).Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div><div class=\"row my-2 mx-3\">")
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		templ_7745c5c3_Err = partials.ResponseTimeGraph(monChecks).Render(ctx, templ_7745c5c3_Buffer)
+		if templ_7745c5c3_Err != nil {
+			return templ_7745c5c3_Err
+		}
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("</div></div></div></div><style>\n        .green {\n            color:green;\n        }\n        .red {\n            color:red;\n        }\n        .card {\n            height:100%;\n        }\n    </style>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
