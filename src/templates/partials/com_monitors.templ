@@ -422,8 +422,6 @@ templ ResponseTimeGraph(checks []database.MonitorResult) {
                     </div>
                     <canvas id="myChart">
                     </canvas>
-
-
             </div>
         </div>
     </div>
@@ -474,4 +472,40 @@ templ ResponseTimeGraph(checks []database.MonitorResult) {
         
 
     </script>
+}
+
+templ ResponseTimeStats(avg int, min int, max int) {
+        <div class="col">
+        <div class="card bg-dark-subtle">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-4">
+                        <div class="row ms-0">
+                            { strconv.Itoa(avg) } ms
+                        </div>
+                        <div class="row">
+                            <span><i class="bi bi-align-middle"></i>  Average</span>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="row ms-0">
+                            { strconv.Itoa(min) } ms
+                        </div>
+                        <div class="row">
+                            <span><i class="bi bi-align-bottom text-success"></i>  Minimum</span>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="row ms-0">
+                            { strconv.Itoa(max) } ms
+                        </div>
+                        <div class="row">
+                            <span><i class="bi bi-align-top text-danger"></i>  Maximum</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
 }

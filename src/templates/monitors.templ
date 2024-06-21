@@ -39,7 +39,7 @@ templ NewMonitorForm(userInfo models.UserInfo) {
     </div>
 }
 
-templ GetSingleMonitor(userInfo models.UserInfo, monInfo models.MonitorCardGenerationModel, monChecks []database.MonitorResult) {
+templ GetSingleMonitor(userInfo models.UserInfo, monInfo models.MonitorCardGenerationModel, monChecks []database.MonitorResult, responseTimeStats templ.Component) {
     <div class="container-fluid">
         <div class="row flex-nowrap">
             @partials.SideBar(userInfo)
@@ -52,6 +52,9 @@ templ GetSingleMonitor(userInfo models.UserInfo, monInfo models.MonitorCardGener
                     </div>
                     <div class="row my-2 mx-3">
                     @partials.ResponseTimeGraph(monChecks)
+                    </div>
+                    <div class="row my-2 mx-3">
+                    @responseTimeStats
                     </div>
             </div>
         </div>

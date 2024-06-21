@@ -197,8 +197,10 @@ func (h *GetMonitorByID) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	monitorInfo := generateMonitorCardGenerationModel(monitorOwnerCheckResponse[0], checkResults)
+	avg, min, max := getAvgMinMaxResponseMs(checkResults)
+	responseTimeStats := partials.ResponseTimeStats(avg, min, max)
 
-	c := templates.GetSingleMonitor(userInfo, monitorInfo, checkResults)
+	c := templates.GetSingleMonitor(userInfo, monitorInfo, checkResults, responseTimeStats)
 
 	err = templates.Layout("Monitor", c).Render(r.Context(), w)
 	if err != nil {
@@ -329,4 +331,25 @@ func (h *GetMonitorByID) ServeResponseTimes(w http.ResponseWriter, r *http.Reque
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+}
+
+func getAvgMinMaxResponseMs(checks []database.MonitorResult) (avg int, min int, max int) {
+	if len(checks) == 0 {
+		return 0, 0, 0
+	}
+	var currentMin int = checks[0].ResponseTimeMs
+	var currentMax int = checks[0].ResponseTimeMs
+	var runningTotal int
+
+	for _, mon := range checks {
+		if mon.ResponseTimeMs < currentMin {
+			currentMin = mon.ResponseTimeMs
+		}
+		if mon.ResponseTimeMs > currentMax {
+			currentMax = mon.ResponseTimeMs
+		}
+		runningTotal += mon.ResponseTimeMs
+	}
+	mean := runningTotal / len(checks)
+	return mean, currentMin, currentMax
 }
