@@ -5,6 +5,7 @@ import (
 	"github.com/Ryan-Har/site-monitor/src/handlers"
 	"github.com/Ryan-Har/site-monitor/src/internal/auth"
 	"github.com/Ryan-Har/site-monitor/src/internal/database"
+	"github.com/Ryan-Har/site-monitor/src/internal/notifier"
 	"github.com/Ryan-Har/site-monitor/src/internal/scheduler"
 	"net/http"
 )
