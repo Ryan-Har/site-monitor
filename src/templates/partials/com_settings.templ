@@ -97,3 +97,59 @@ templ ToggleThemeCard() {
     </div>
 }
 
+templ AddNotificationMethod() {
+    <div class="container-md">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Add New notification Method</h5>
+                <hr></hr>
+                <div class="row">
+                    <form action="/notifications/new" method="post" hx-boost="true" hx-target="#formContent" id="addNotificationForm">
+                        <div class="my-2">
+                            <label for="typeSelection" class="form-label">Notification Type</label>
+                            <select class="form-select" id="typeSelection" name="typeSelection" hx-get="/settings/getNotificationFormInfo" hx-trigger="change">
+                                <option hidden disabled selected value> -- select an option -- </option>
+                                <option value="discord">Discord Webhook</option>
+                                <option value="slack">Slack Webhook</option>
+                                <option value="email">Email</option>
+                            </select>
+                        </div>
+                        <div id="formContent">
+                        </div>
+                        <hr></hr>
+                        <p id="testMessageResponse"></p>
+                        <div class="row">
+                            <div class="col">
+                                <button class="btn btn-primary" id="formTestButton" style="display: none;" hx-post="/notifications/sendtest" hx-target="#testMessageResponse">Send Test</button>
+                            </div>
+                            <div class="col text-end">
+                                <button class="btn btn-primary" id="formSubmitButton" type="submit">Submit</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+templ NotificationFormContentWebhook() {
+    <hr>
+    <label for="additionalInfo" class="form-label">Webhook endpoint</label>
+    <input type="text" class="form-control" id="additionalInfo" name="additionalInfo" required placeholder="https://my/webhook/endpoint"></input>
+    @ShowNotificationTestButton()
+}
+
+templ NotificationFormContentEmail() {
+    <hr>
+    <label for="additionalInfo" class="form-label">Email address</label>
+    <input type="email" class="form-control" id="additionalInfo" name="additionalInfo" required placeholder="example@example.com"></input>
+    @ShowNotificationTestButton()
+}
+
+templ ShowNotificationTestButton() {
+    <script>
+        const formButton = document.getElementById('formTestButton');
+        formButton.style.display = "block";
+    </script>
+}

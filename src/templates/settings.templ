@@ -39,7 +39,11 @@ templ SettingsAccount(currentName string) {
 
 //Notification portions of the settings page
 templ SettingsNotifications() {
-
+    <div class="container">
+        <div class="row m-4">
+            @partials.AddNotificationMethod()
+        </div>
+    </div>
 }
 
 //Security portions of the settings page

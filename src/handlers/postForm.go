@@ -259,3 +259,35 @@ func isIPAddress(ip string) bool {
 func isValidPortNumber(n int) bool {
 	return 0 < n && n <= 65535
 }
+
+func (h *PostFormHandler) NewNotificationForm(w http.ResponseWriter, r *http.Request) {
+	userInfo, err := GetUserInfoFromContext(r.Context())
+	if err != nil {
+		slog.Error("error getting user info from context for newmonitor form post")
+		w.WriteHeader(http.StatusForbidden)
+		fmt.Fprintf(w, "error getting user info from context, reauthentication needed")
+		return
+	}
+
+	if err = r.ParseForm(); err != nil {
+		slog.Error("error parsing form for newmonitor form post")
+		w.WriteHeader(http.StatusBadRequest)
+		fmt.Fprintf(w, "Error parsing form data: %v", err)
+		return
+	}
+
+	newNotification := &database.NotificationSettings{
+		UUID:             userInfo.UUID,
+		NotificationType: database.NotificationType(r.Form.Get("typeSelection")),
+		AdditionalInfo:   r.Form.Get("additionalInfo"),
+	}
+
+	if err = h.dbHandler.AddNotification(*newNotification); err != nil {
+		slog.Error("error adding notification method to db", "notification", newNotification, "err", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprintf(w, "error adding notification method to db")
+		return
+	}
+
+	w.Header().Set("HX-Redirect", "/settings/notifications")
+}

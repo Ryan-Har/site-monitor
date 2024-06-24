@@ -120,5 +120,6 @@ func (wn *WebhookNotifier) SendMessage(msg string) error {
 	defer resp.Body.Close()
 
 	slog.Info("Webhook sent", "Status code", resp.StatusCode)
+
 	return nil
 }

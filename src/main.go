@@ -5,7 +5,6 @@ import (
 	"github.com/Ryan-Har/site-monitor/src/handlers"
 	"github.com/Ryan-Har/site-monitor/src/internal/auth"
 	"github.com/Ryan-Har/site-monitor/src/internal/database"
-	"github.com/Ryan-Har/site-monitor/src/internal/notifier"
 	"github.com/Ryan-Har/site-monitor/src/internal/scheduler"
 	"net/http"
 )
@@ -35,6 +34,7 @@ func main() {
 	http.Handle("GET /settings/account", fb.AuthMiddleware(http.HandlerFunc(handlers.NewGetAccountSettingsHandler().ServeHTTP)))
 	http.Handle("GET /settings/notifications", fb.AuthMiddleware(http.HandlerFunc(handlers.NewGetNotificationSettingsHandler().ServeHTTP)))
 	http.Handle("GET /settings/security", fb.AuthMiddleware(http.HandlerFunc(handlers.NewGetSecuritySettingsHandler().ServeHTTP)))
+	http.HandleFunc("GET /settings/getNotificationFormInfo", handlers.NewGetNotificationSettingsHandler().ServeFormContent)
 
 	//serve json
 	http.Handle("GET /monitors/{monitorid}/responsetime", fb.AuthMiddleware(http.HandlerFunc(handlers.NewGetMonitorByID(*dbh).ServeResponseTimes)))
@@ -42,9 +42,11 @@ func main() {
 	//perform actions
 	http.HandleFunc("POST /verifylogin", fb.VerifyLogin)
 	http.HandleFunc("POST /updateauthcookie", fb.UpdateAuthCookie)
+	http.HandleFunc("POST /notifications/sendtest", handlers.NewGetNotificationSettingsHandler().SendTestNotification)
 	http.Handle("DELETE /monitors/{monitorid}", fb.AuthMiddleware(http.HandlerFunc(handlers.NewDeleteMonitorByID(*dbh).ServeHTTP)))
 	//forms
 	http.Handle("POST /monitors/new", fb.AuthMiddleware(http.HandlerFunc(handlers.NewPostFormHandler(*dbh).NewMonitorForm)))
+	http.Handle("POST /notifications/new", fb.AuthMiddleware(http.HandlerFunc(handlers.NewPostFormHandler(*dbh).NewNotificationForm)))
 	//form validations
 	http.HandleFunc("POST /validation/monitorlocationhttp", handlers.NewValidationFormHandler().ValidateMonitorLocationHttp)
 	http.HandleFunc("POST /validation/monitorlocationiporhost", handlers.NewValidationFormHandler().ValidateMonitorLocationIpOrHost)
