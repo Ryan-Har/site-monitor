@@ -1,5 +1,12 @@
 package partials
 
+
+import(
+    "strconv"
+    "github.com/Ryan-Har/site-monitor/src/internal/database"
+)
+
+
 // SettingsNavBar is a partial that renders a navigation bar for the settings page
 // activeItem is the name of the active item in the navigation bar
 templ SettingsNavBar(activeItem string) {
@@ -101,7 +108,7 @@ templ AddNotificationMethod() {
     <div class="container-md">
         <div class="card">
             <div class="card-body">
-                <h5 class="card-title">Add New notification Method</h5>
+                <h5 class="card-title">Add New Notification Method</h5>
                 <hr></hr>
                 <div class="row">
                     <form action="/notifications/new" method="post" hx-boost="true" hx-target="#formContent" id="addNotificationForm">
@@ -152,4 +159,70 @@ templ ShowNotificationTestButton() {
         const formButton = document.getElementById('formTestButton');
         formButton.style.display = "block";
     </script>
+}
+
+templ ExistingNotificationsWrapper() {
+    <div class="container-md">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Existing Notification Methods</h5>
+                <hr></hr>
+                { children... }
+            </div>
+        </div>
+    </div>
+}
+
+templ ExistingNotifications(noti database.NotificationSettings) {
+    <div class="row my-2" id={ "notification" + strconv.Itoa(noti.Notificationid) }>
+        <div class="col-2">
+            { noti.NotificationType.String() }
+        </div>
+        <div class="col" style="overflow-x: auto; white-space: nowrap;">
+            if len(noti.AdditionalInfo) > 50 {
+                { noti.AdditionalInfo[:50] + "..." }
+            } else {
+                { noti.AdditionalInfo }
+            }
+        </div>
+        <div class="btn-group col-2">
+            <button type="button" class="btn btn-sm btn-primary edit-btn" 
+            hx-get={ "/settings/notifications/" + strconv.Itoa(noti.Notificationid) } 
+            hx-target={ "#notification" + strconv.Itoa(noti.Notificationid) } 
+            hx-swap="outerHTML">Edit</button>
+            <button type="button" class="btn btn-sm btn-danger delete-btn"
+            hx-delete={ "/settings/notifications/" + strconv.Itoa(noti.Notificationid) }
+            hx-target={ "#notification" + strconv.Itoa(noti.Notificationid) } 
+            hx-swap="outerHTML"
+            hx-trigger="click" >Delete</button>
+        </div>
+    </div>
+}
+
+templ EditExistingNotifications(noti database.NotificationSettings) {
+    <div class="row my-2" id={ "notification" + strconv.Itoa(noti.Notificationid) }>
+        <div class="col-2">
+            { noti.NotificationType.String() }
+        </div>
+        <div class="col" style="overflow-x: auto; white-space: nowrap;">
+            <input type="text" class="form-control" 
+            id={ "additionalinfo" + strconv.Itoa(noti.Notificationid) } 
+            name="additionalinfo" 
+            value={ noti.AdditionalInfo } 
+            ></input>
+        </div>
+        <div class="btn-group col-2">
+            <button type="button" class="btn btn-sm btn-primary save-btn" 
+            hx-put={ "/settings/notifications/" + strconv.Itoa(noti.Notificationid) } 
+            hx-target={ "#notification" + strconv.Itoa(noti.Notificationid) } 
+            hx-swap="outerHTML"
+            hx-trigger="click" 
+            hx-include={ "#additionalinfo" + strconv.Itoa(noti.Notificationid) }>Save</button>
+            <button type="button" class="btn btn-sm btn-danger delete-btn"
+            hx-delete={ "/settings/notifications/" + strconv.Itoa(noti.Notificationid) }
+            hx-target={ "#notification" + strconv.Itoa(noti.Notificationid) } 
+            hx-swap="outerHTML"
+            hx-trigger="click" >Delete</button>
+        </div>
+    </div>
 }

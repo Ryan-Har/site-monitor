@@ -32,9 +32,11 @@ func main() {
 	http.Handle("GET /maintenance", fb.AuthMiddleware(http.HandlerFunc(handlers.NewGetMaintenanceHandler().ServeHTTP)))
 	http.Handle("GET /incidents", fb.AuthMiddleware(http.HandlerFunc(handlers.NewGetIncidentsHandler().ServeHTTP)))
 	http.Handle("GET /settings/account", fb.AuthMiddleware(http.HandlerFunc(handlers.NewGetAccountSettingsHandler().ServeHTTP)))
-	http.Handle("GET /settings/notifications", fb.AuthMiddleware(http.HandlerFunc(handlers.NewGetNotificationSettingsHandler().ServeHTTP)))
+	http.Handle("GET /settings/notifications", fb.AuthMiddleware(http.HandlerFunc(handlers.NewGetNotificationSettingsHandler(*dbh).ServeHTTP)))
+	http.Handle("GET /settings/notifications/{notificationid}", fb.AuthMiddleware(http.HandlerFunc(handlers.NewGetEditNotificationByID(*dbh).ServeHTTP)))
+
 	http.Handle("GET /settings/security", fb.AuthMiddleware(http.HandlerFunc(handlers.NewGetSecuritySettingsHandler().ServeHTTP)))
-	http.HandleFunc("GET /settings/getNotificationFormInfo", handlers.NewGetNotificationSettingsHandler().ServeFormContent)
+	http.HandleFunc("GET /settings/getNotificationFormInfo", handlers.NewGetNotificationSettingsHandler(*dbh).ServeFormContent)
 
 	//serve json
 	http.Handle("GET /monitors/{monitorid}/responsetime", fb.AuthMiddleware(http.HandlerFunc(handlers.NewGetMonitorByID(*dbh).ServeResponseTimes)))
@@ -42,11 +44,15 @@ func main() {
 	//perform actions
 	http.HandleFunc("POST /verifylogin", fb.VerifyLogin)
 	http.HandleFunc("POST /updateauthcookie", fb.UpdateAuthCookie)
-	http.HandleFunc("POST /notifications/sendtest", handlers.NewGetNotificationSettingsHandler().SendTestNotification)
+	http.HandleFunc("POST /notifications/sendtest", handlers.NewGetNotificationSettingsHandler(*dbh).SendTestNotification)
 	http.Handle("DELETE /monitors/{monitorid}", fb.AuthMiddleware(http.HandlerFunc(handlers.NewDeleteMonitorByID(*dbh).ServeHTTP)))
+	http.Handle("PUT /settings/notifications/{notificationid}", fb.AuthMiddleware(http.HandlerFunc(handlers.NewPostNotificationSettingsHandler(*dbh).ByID)))
+	http.Handle("DELETE /settings/notifications/{notificationid}", fb.AuthMiddleware(http.HandlerFunc(handlers.NewDeleteNotificationSettingsHandler(*dbh).ByID)))
+
 	//forms
 	http.Handle("POST /monitors/new", fb.AuthMiddleware(http.HandlerFunc(handlers.NewPostFormHandler(*dbh).NewMonitorForm)))
 	http.Handle("POST /notifications/new", fb.AuthMiddleware(http.HandlerFunc(handlers.NewPostFormHandler(*dbh).NewNotificationForm)))
+
 	//form validations
 	http.HandleFunc("POST /validation/monitorlocationhttp", handlers.NewValidationFormHandler().ValidateMonitorLocationHttp)
 	http.HandleFunc("POST /validation/monitorlocationiporhost", handlers.NewValidationFormHandler().ValidateMonitorLocationIpOrHost)

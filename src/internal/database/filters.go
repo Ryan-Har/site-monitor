@@ -181,5 +181,5 @@ func (f ByNotificationIds) NotificationToSQLite(notificationTable string) (strin
 		placeholders[i] = id
 	}
 
-	return fmt.Sprintf(" %s.Check_id IN (%s) ", notificationTable, generateQuestionMarks(len(f.Ids))), placeholders
+	return fmt.Sprintf(" %s.Notification_id IN (%s) ", notificationTable, generateQuestionMarks(len(f.Ids))), placeholders
 }

@@ -2,11 +2,14 @@ package handlers
 
 import (
 	"fmt"
+	"log/slog"
+	"net/http"
+	"strconv"
+
+	"github.com/Ryan-Har/site-monitor/src/internal/database"
 	"github.com/Ryan-Har/site-monitor/src/internal/notifier"
 	"github.com/Ryan-Har/site-monitor/src/templates"
 	"github.com/Ryan-Har/site-monitor/src/templates/partials"
-	"log/slog"
-	"net/http"
 )
 
 type GetAccountSettingsHandler struct{}
@@ -15,10 +18,14 @@ func NewGetAccountSettingsHandler() *GetAccountSettingsHandler {
 	return &GetAccountSettingsHandler{}
 }
 
-type GetNotificationSettingsHandler struct{}
+type GetNotificationSettingsHandler struct {
+	dbHandler database.DBHandler
+}
 
-func NewGetNotificationSettingsHandler() *GetNotificationSettingsHandler {
-	return &GetNotificationSettingsHandler{}
+func NewGetNotificationSettingsHandler(dbh database.DBHandler) *GetNotificationSettingsHandler {
+	return &GetNotificationSettingsHandler{
+		dbHandler: dbh,
+	}
 }
 
 type GetSecuritySettingsHandler struct{}
@@ -57,8 +64,13 @@ func (h *GetNotificationSettingsHandler) ServeHTTP(w http.ResponseWriter, r *htt
 		return
 	}
 
+	notificationSettings, err := h.dbHandler.GetNotifications(database.ByUUIDs{Ids: []string{userInfo.UUID}})
+	if err != nil {
+		slog.Error("error getting notification settings for user", "uuid", userInfo.UUID)
+	}
+
 	nav := partials.SettingsNavBar("notifications")
-	not := templates.SettingsNotifications()
+	not := templates.SettingsNotifications(notificationSettings)
 
 	c := templates.Settings(nav, not, userInfo)
 
@@ -158,6 +170,65 @@ func (h *GetNotificationSettingsHandler) SendTestNotification(w http.ResponseWri
 	case "email":
 		fmt.Fprintf(w, "email notification sent successfully")
 		return
+	}
+
+}
+
+type GetEditNotificationByID struct {
+	dbHandler database.DBHandler
+}
+
+func NewGetEditNotificationByID(dbh database.DBHandler) *GetEditNotificationByID {
+	return &GetEditNotificationByID{
+		dbHandler: dbh,
+	}
+}
+
+type DeleteNotificationByID struct {
+	dbHandler database.DBHandler
+}
+
+func NewDeleteNotificationByID(dbh database.DBHandler) *DeleteNotificationByID {
+	return &DeleteNotificationByID{
+		dbHandler: dbh,
+	}
+}
+
+func (h *GetEditNotificationByID) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	userInfo, err := GetUserInfoFromContext(r.Context())
+	if err != nil {
+		slog.Error("error getting user info from context for get notification by id")
+		w.WriteHeader(http.StatusForbidden)
+		fmt.Fprintf(w, "error getting user info from context, reauthentication needed")
+		return
+	}
+
+	idStr := r.PathValue("notificationid")
+	if idStr == "" {
+		http.Error(w, "notificationid not found in query string", http.StatusBadRequest)
+		return
+	}
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		fmt.Fprintf(w, "error converting notification id to int")
+		return
+	}
+
+	notificationResponse, err := h.dbHandler.GetNotifications(database.ByNotificationIds{Ids: []int{id}})
+	if err != nil || len(notificationResponse) < 1 {
+		fmt.Fprintf(w, "error getting notification with id %d from database", id)
+		return
+	}
+
+	if notificationResponse[0].UUID != userInfo.UUID {
+		http.Error(w, "monitor not owned by current user", http.StatusForbidden)
+		return
+	}
+
+	err = partials.EditExistingNotifications(notificationResponse[0]).Render(r.Context(), w)
+	if err != nil {
+		slog.Error("error rendering edit notification by id")
 	}
 
 }

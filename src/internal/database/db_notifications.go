@@ -1,6 +1,7 @@
 package database
 
 import (
+	"errors"
 	"fmt"
 	"strings"
 )
@@ -12,6 +13,10 @@ const (
 )
 
 type NotificationType string
+
+func (n NotificationType) String() string {
+	return string(n)
+}
 
 type NotificationSettings struct {
 	Notificationid   int
@@ -104,5 +109,28 @@ func (h *SQLiteHandler) DeleteNotifications(filters ...NotificationFilter) error
 		return err
 	}
 
+	return nil
+}
+
+func (h *SQLiteHandler) UpdateNotificationAdditionalInfo(notificationSettings NotificationSettings) error {
+	if notificationSettings.Notificationid == 0 {
+		return errors.New("notificationSettings struct does not include the notification id")
+	}
+
+	stmt, err := h.DB.Prepare("UPDATE Notifications SET Additional_info = ? WHERE Notification_id = ?")
+	if err != nil {
+		return err
+	}
+	defer stmt.Close() // Close the prepared statement
+
+	h.writeMutex.Lock()
+
+	_, err = stmt.Exec(notificationSettings.AdditionalInfo, notificationSettings.Notificationid)
+	if err != nil {
+		h.writeMutex.Unlock()
+		return err
+	}
+
+	h.writeMutex.Unlock()
 	return nil
 }
