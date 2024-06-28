@@ -195,10 +195,10 @@ templ AddMonitorForm() {
     </script>
 }
 
-templ MonitorFormContentHTTP() {
+templ MonitorFormContentHTTP(notifs map[int]string) {
     @MonitorLocationHttp()
     <hr></hr>
-    @NotificationSelection(getSampleNotifications())
+    @NotificationSelection(notifs)
     <hr></hr>
     @MonitorInterval()
     <hr></hr>
@@ -206,20 +206,20 @@ templ MonitorFormContentHTTP() {
     <hr></hr>
 }
 
-templ MonitorFormContentPing() {
+templ MonitorFormContentPing(notifs map[int]string) {
     @MonitorLocationIpOrHost()
     <hr></hr>
-    @NotificationSelection(getSampleNotifications())
+    @NotificationSelection(notifs)
     <hr></hr>
     @MonitorInterval()
     <hr></hr>
 
 }
 
-templ MonitorFormContentPort() {
+templ MonitorFormContentPort(notifs map[int]string) {
     @MonitorLocationPort()
     <hr></hr>
-    @NotificationSelection(getSampleNotifications())
+    @NotificationSelection(notifs)
     <hr></hr>
     @MonitorInterval()
     <hr></hr>
@@ -331,13 +331,6 @@ templ TimeoutInterval() {
     <input type="number" class="form-input" id="timeoutIntervalNumber" name="timeoutIntervalNumber" min="1" max="60" value="5" oninput="this.form.timeoutIntervalRange.value=this.value"/>
 }
 
-func getSampleNotifications() map[int]string {
-    return map[int]string{
-        1: "Email",
-        2: "Webhook1",
-        3: "Slack",
-    }
-}
 
 templ SingleMonitorTitle(statusUp bool, url string, mType string) {
     <div class="row mt-2 mb-4 mx-3">

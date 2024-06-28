@@ -24,10 +24,14 @@ func NewGetMonitorOverviewHandler(dbh database.DBHandler) *GetMonitorOverviewHan
 	}
 }
 
-type GetMonitorFormHandler struct{}
+type GetMonitorFormHandler struct {
+	dbHandler database.DBHandler
+}
 
-func NewGetMonitorFormHandler() *GetMonitorFormHandler {
-	return &GetMonitorFormHandler{}
+func NewGetMonitorFormHandler(dbh database.DBHandler) *GetMonitorFormHandler {
+	return &GetMonitorFormHandler{
+		dbHandler: dbh,
+	}
 }
 
 type GetMonitorByID struct {
@@ -135,20 +139,38 @@ func (h *GetMonitorFormHandler) ServeFormContent(w http.ResponseWriter, r *http.
 		return
 	}
 
+	userInfo, err := GetUserInfoFromContext(r.Context())
+	if err != nil {
+		slog.Error("error getting user info from context for newmonitor form post")
+		w.WriteHeader(http.StatusForbidden)
+		fmt.Fprintf(w, "error getting user info from context, reauthentication needed")
+		return
+	}
+
+	resp, err := h.dbHandler.GetNotifications(database.ByUUIDs{Ids: []string{userInfo.UUID}})
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	idNameMap := make(map[int]string)
+	for _, v := range resp {
+		idNameMap[v.Notificationid] = v.NotificationType.String()
+	}
+
 	//should only ever include a single option, so we'll take the first one
 	switch typeSelection[0] {
 	case "HTTP":
-		if err := partials.MonitorFormContentHTTP().Render(r.Context(), w); err != nil {
+		if err := partials.MonitorFormContentHTTP(idNameMap).Render(r.Context(), w); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 	case "ICMP":
-		if err := partials.MonitorFormContentPing().Render(r.Context(), w); err != nil {
+		if err := partials.MonitorFormContentPing(idNameMap).Render(r.Context(), w); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 	case "TCP":
-		if err := partials.MonitorFormContentPort().Render(r.Context(), w); err != nil {
+		if err := partials.MonitorFormContentPort(idNameMap).Render(r.Context(), w); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}

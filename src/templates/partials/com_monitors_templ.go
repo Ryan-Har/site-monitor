@@ -400,7 +400,7 @@ func AddMonitorForm() templ.Component {
 	})
 }
 
-func MonitorFormContentHTTP() templ.Component {
+func MonitorFormContentHTTP(notifs map[int]string) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
 		if !templ_7745c5c3_IsBuffer {
@@ -421,7 +421,7 @@ func MonitorFormContentHTTP() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = NotificationSelection(getSampleNotifications()).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = NotificationSelection(notifs).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -452,7 +452,7 @@ func MonitorFormContentHTTP() templ.Component {
 	})
 }
 
-func MonitorFormContentPing() templ.Component {
+func MonitorFormContentPing(notifs map[int]string) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
 		if !templ_7745c5c3_IsBuffer {
@@ -473,7 +473,7 @@ func MonitorFormContentPing() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = NotificationSelection(getSampleNotifications()).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = NotificationSelection(notifs).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -496,7 +496,7 @@ func MonitorFormContentPing() templ.Component {
 	})
 }
 
-func MonitorFormContentPort() templ.Component {
+func MonitorFormContentPort(notifs map[int]string) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
 		if !templ_7745c5c3_IsBuffer {
@@ -517,7 +517,7 @@ func MonitorFormContentPort() templ.Component {
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
-		templ_7745c5c3_Err = NotificationSelection(getSampleNotifications()).Render(ctx, templ_7745c5c3_Buffer)
+		templ_7745c5c3_Err = NotificationSelection(notifs).Render(ctx, templ_7745c5c3_Buffer)
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -1040,14 +1040,6 @@ func TimeoutInterval() templ.Component {
 	})
 }
 
-func getSampleNotifications() map[int]string {
-	return map[int]string{
-		1: "Email",
-		2: "Webhook1",
-		3: "Slack",
-	}
-}
-
 func SingleMonitorTitle(statusUp bool, url string, mType string) templ.Component {
 	return templ.ComponentFunc(func(ctx context.Context, templ_7745c5c3_W io.Writer) (templ_7745c5c3_Err error) {
 		templ_7745c5c3_Buffer, templ_7745c5c3_IsBuffer := templ_7745c5c3_W.(*bytes.Buffer)
@@ -1083,7 +1075,7 @@ func SingleMonitorTitle(statusUp bool, url string, mType string) templ.Component
 		var templ_7745c5c3_Var49 string
 		templ_7745c5c3_Var49, templ_7745c5c3_Err = templ.JoinStringErrs(url)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/partials/com_monitors.templ`, Line: 352, Col: 60}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/partials/com_monitors.templ`, Line: 345, Col: 60}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var49))
 		if templ_7745c5c3_Err != nil {
@@ -1096,7 +1088,7 @@ func SingleMonitorTitle(statusUp bool, url string, mType string) templ.Component
 		var templ_7745c5c3_Var50 string
 		templ_7745c5c3_Var50, templ_7745c5c3_Err = templ.JoinStringErrs(mType)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/partials/com_monitors.templ`, Line: 354, Col: 23}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/partials/com_monitors.templ`, Line: 347, Col: 23}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var50))
 		if templ_7745c5c3_Err != nil {
@@ -1109,7 +1101,7 @@ func SingleMonitorTitle(statusUp bool, url string, mType string) templ.Component
 		var templ_7745c5c3_Var51 string
 		templ_7745c5c3_Var51, templ_7745c5c3_Err = templ.JoinStringErrs(url)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/partials/com_monitors.templ`, Line: 354, Col: 43}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/partials/com_monitors.templ`, Line: 347, Col: 43}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var51))
 		if templ_7745c5c3_Err != nil {
@@ -1157,7 +1149,7 @@ func CurrentStatusCard(up bool, lastChangeSec int) templ.Component {
 				var templ_7745c5c3_Var53 string
 				templ_7745c5c3_Var53, templ_7745c5c3_Err = templ.JoinStringErrs(dateTimeXSecondsAgo(lastChangeSec))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/partials/com_monitors.templ`, Line: 373, Col: 64}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/partials/com_monitors.templ`, Line: 366, Col: 64}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var53))
 				if templ_7745c5c3_Err != nil {
@@ -1182,7 +1174,7 @@ func CurrentStatusCard(up bool, lastChangeSec int) templ.Component {
 				var templ_7745c5c3_Var54 string
 				templ_7745c5c3_Var54, templ_7745c5c3_Err = templ.JoinStringErrs(dateTimeXSecondsAgo(lastChangeSec))
 				if templ_7745c5c3_Err != nil {
-					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/partials/com_monitors.templ`, Line: 381, Col: 64}
+					return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/partials/com_monitors.templ`, Line: 374, Col: 64}
 				}
 				_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var54))
 				if templ_7745c5c3_Err != nil {
@@ -1235,7 +1227,7 @@ func LastCheckCard(lastCheckSecs int, checkInterval int) templ.Component {
 			var templ_7745c5c3_Var56 string
 			templ_7745c5c3_Var56, templ_7745c5c3_Err = templ.JoinStringErrs(dateTimeXSecondsAgo(lastCheckSecs))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/partials/com_monitors.templ`, Line: 404, Col: 60}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/partials/com_monitors.templ`, Line: 397, Col: 60}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var56))
 			if templ_7745c5c3_Err != nil {
@@ -1249,7 +1241,7 @@ func LastCheckCard(lastCheckSecs int, checkInterval int) templ.Component {
 		var templ_7745c5c3_Var57 string
 		templ_7745c5c3_Var57, templ_7745c5c3_Err = templ.JoinStringErrs(secondsToHumanReadable(checkInterval))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/partials/com_monitors.templ`, Line: 407, Col: 73}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/partials/com_monitors.templ`, Line: 400, Col: 73}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var57))
 		if templ_7745c5c3_Err != nil {
@@ -1310,7 +1302,7 @@ func ResponseTimeStats(avg int, min int, max int) templ.Component {
 		var templ_7745c5c3_Var60 string
 		templ_7745c5c3_Var60, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(avg))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/partials/com_monitors.templ`, Line: 484, Col: 47}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/partials/com_monitors.templ`, Line: 477, Col: 47}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var60))
 		if templ_7745c5c3_Err != nil {
@@ -1323,7 +1315,7 @@ func ResponseTimeStats(avg int, min int, max int) templ.Component {
 		var templ_7745c5c3_Var61 string
 		templ_7745c5c3_Var61, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(min))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/partials/com_monitors.templ`, Line: 492, Col: 47}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/partials/com_monitors.templ`, Line: 485, Col: 47}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var61))
 		if templ_7745c5c3_Err != nil {
@@ -1336,7 +1328,7 @@ func ResponseTimeStats(avg int, min int, max int) templ.Component {
 		var templ_7745c5c3_Var62 string
 		templ_7745c5c3_Var62, templ_7745c5c3_Err = templ.JoinStringErrs(strconv.Itoa(max))
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/partials/com_monitors.templ`, Line: 500, Col: 47}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/partials/com_monitors.templ`, Line: 493, Col: 47}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var62))
 		if templ_7745c5c3_Err != nil {

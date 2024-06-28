@@ -24,11 +24,11 @@ func main() {
 	http.HandleFunc("GET /login", handlers.NewGetLoginHandler().ServeHTTP)
 	http.HandleFunc("GET /forgottenpassword", handlers.NewGetResetPasswordHandler().ServeHTTP)
 	http.Handle("GET /monitors", fb.AuthMiddleware(http.HandlerFunc(handlers.NewGetMonitorOverviewHandler(*dbh).ServeHTTP)))
-	http.Handle("GET /monitors/new", fb.AuthMiddleware(http.HandlerFunc(handlers.NewGetMonitorFormHandler().ServeHTTP)))
+	http.Handle("GET /monitors/new", fb.AuthMiddleware(http.HandlerFunc(handlers.NewGetMonitorFormHandler(*dbh).ServeHTTP)))
 	http.Handle("GET /monitors/{monitorid}", fb.AuthMiddleware(http.HandlerFunc(handlers.NewGetMonitorByID(*dbh).ServeHTTP)))
 
 	// http.Handle("GET /monitors/{monitorid}/edit", fb.AuthMiddleware(http.HandlerFunc(handlers.NewGetMonitorByID().ServeHTTP)))
-	http.HandleFunc("GET /monitors/getCreateFormInfo", handlers.NewGetMonitorFormHandler().ServeFormContent)
+	http.Handle("GET /monitors/getCreateFormInfo", fb.AuthMiddleware(http.HandlerFunc(handlers.NewGetMonitorFormHandler(*dbh).ServeFormContent)))
 	http.Handle("GET /maintenance", fb.AuthMiddleware(http.HandlerFunc(handlers.NewGetMaintenanceHandler().ServeHTTP)))
 	http.Handle("GET /incidents", fb.AuthMiddleware(http.HandlerFunc(handlers.NewGetIncidentsHandler().ServeHTTP)))
 	http.Handle("GET /settings/account", fb.AuthMiddleware(http.HandlerFunc(handlers.NewGetAccountSettingsHandler().ServeHTTP)))
