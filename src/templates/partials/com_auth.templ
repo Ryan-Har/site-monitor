@@ -121,6 +121,8 @@ templ MonitorAuthState() {
         const errorCode = error.code;
         const errorMessage = error.message;
         console.error('Error: ', errorCode, errorMessage);
+        const errorDiv = document.getElementById('errormsg');
+        errorDiv.innerHTML = "Incorrect username or password, please try again";
       });
     };
 
