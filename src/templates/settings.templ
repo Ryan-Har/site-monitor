@@ -59,5 +59,9 @@ templ SettingsNotifications(notis []database.NotificationSettings) {
 
 //Security portions of the settings page
 templ SettingsSecurity() {
-
-}
+    <div class="container-fluid">
+        <div class="row m-4">
+            @partials.DeleteAccountCard()
+        </div>
+    </div>
+}   

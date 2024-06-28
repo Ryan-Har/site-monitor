@@ -112,3 +112,14 @@ func (s *Server) AuthMiddleware(next http.Handler) http.Handler {
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }
+
+func (s *Server) DeleteAccount(uuid string) error {
+	client, err := s.app.Auth(context.Background())
+	if err != nil {
+		return err
+	}
+
+	ctx := context.Background()
+	err = client.DeleteUser(ctx, uuid)
+	return err
+}

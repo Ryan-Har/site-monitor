@@ -111,7 +111,7 @@ templ singleMonitorMenu(monitorId int) {
         <i class="bi bi-gear" type="button"  data-bs-toggle="dropdown" aria-expanded="false"></i>
         <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
             <li><a class="dropdown-item" href={ templ.URL(fmt.Sprintf("/monitors/%d", monitorId)) }>View Monitor</a></li>
-            <li><a class="dropdown-item" href={ templ.URL(fmt.Sprintf("/monitors/%d/edit", monitorId)) }>Edit Monitor</a></li>
+            //<li><a class="dropdown-item" href={ templ.URL(fmt.Sprintf("/monitors/%d/edit", monitorId)) }>Edit Monitor</a></li> TODO: Add ability to edit
             <li><a class="dropdown-item" hx-trigger="click" hx-target="closest .row.my-2.mx-3" hx-swap="outerHTML" hx-delete={ fmt.Sprintf("/monitors/%d", monitorId) } hx-confirm="Are you sure you wish to delete your monitor?">Delete Monitor</a></li>
         </ul>
     </div>

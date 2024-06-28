@@ -48,6 +48,7 @@ func main() {
 	http.Handle("DELETE /monitors/{monitorid}", fb.AuthMiddleware(http.HandlerFunc(handlers.NewDeleteMonitorByID(*dbh).ServeHTTP)))
 	http.Handle("PUT /settings/notifications/{notificationid}", fb.AuthMiddleware(http.HandlerFunc(handlers.NewPostNotificationSettingsHandler(*dbh).ByID)))
 	http.Handle("DELETE /settings/notifications/{notificationid}", fb.AuthMiddleware(http.HandlerFunc(handlers.NewDeleteNotificationSettingsHandler(*dbh).ByID)))
+	http.Handle("DELETE /settings/account", fb.AuthMiddleware(http.HandlerFunc(handlers.NewDeleteAccountHandler(*dbh, *fb).ServeHTTP)))
 
 	//forms
 	http.Handle("POST /monitors/new", fb.AuthMiddleware(http.HandlerFunc(handlers.NewPostFormHandler(*dbh).NewMonitorForm)))

@@ -126,6 +126,7 @@ templ MonitorAuthState() {
 
   function logout() {
     firebase.auth().signOut().then(() => {
+      window.location.href = "/login";
     }, (error) => {
     console.log("error occured logging out")
     });
@@ -218,5 +219,12 @@ templ ChangePasswordJS() {
       }
     }
   });
+  </script>
+}
+
+templ ReturnLogout() {
+  <p>deleted account, logging out</p>
+  <script>
+      logout();
   </script>
 }

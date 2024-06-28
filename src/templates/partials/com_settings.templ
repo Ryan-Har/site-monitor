@@ -118,7 +118,7 @@ templ AddNotificationMethod() {
                                 <option hidden disabled selected value> -- select an option -- </option>
                                 <option value="discord">Discord Webhook</option>
                                 <option value="slack">Slack Webhook</option>
-                                <option value="email">Email</option>
+                                //<option value="email">Email</option> TODO: Add implementation of email
                             </select>
                         </div>
                         <div id="formContent">
@@ -223,6 +223,25 @@ templ EditExistingNotifications(noti database.NotificationSettings) {
             hx-target={ "#notification" + strconv.Itoa(noti.Notificationid) } 
             hx-swap="outerHTML"
             hx-trigger="click" >Delete</button>
+        </div>
+    </div>
+}
+
+templ DeleteAccountCard() {
+    <div class="container-md">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Delete Account</h5>
+                <hr></hr>
+                <div class="row">
+                    <div class="col-auto">
+                        Delete account and all monitors associated
+                    </div>                 
+                    <div class="col text-end">
+                        <button type="button" class="btn btn-danger" hx-trigger="click" hx-delete="/settings/account" hx-confirm="Are you sure you wish to delete your account? This cannot be undone." hx-target="this" hx-swap="afterend">Delete Account</button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 }
