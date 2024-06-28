@@ -23,14 +23,13 @@ func (h *SQLiteHandler) AddMonitors(monitor ...Monitor) error {
 	defer stmt.Close() // Close the prepared statement
 
 	h.writeMutex.Lock()
+	defer h.writeMutex.Unlock()
 	for _, m := range monitor {
 		_, err := stmt.Exec(m.UUID, m.URL, m.Type, m.IntervalSecs, m.TimeoutSecs, m.Port)
 		if err != nil {
-			h.writeMutex.Unlock()
 			return err
 		}
 	}
-	h.writeMutex.Unlock()
 	return nil
 }
 

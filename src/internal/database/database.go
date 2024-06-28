@@ -24,6 +24,7 @@ type DBHandler interface {
 	GetNotifications(filters ...NotificationFilter) ([]NotificationSettings, error)
 	DeleteNotifications(filters ...NotificationFilter) error
 	UpdateNotificationAdditionalInfo(notificationSettings NotificationSettings) error
+	AddMonitorNotification(monitorToNotification map[int]int) error
 }
 
 type SQLiteHandler struct {

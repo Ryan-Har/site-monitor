@@ -70,6 +70,44 @@ func (h *PostFormHandler) NewMonitorForm(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
+	notificationSelectionStr := r.Form.Get("notificationSelection")
+	if notificationSelectionStr == "" {
+		return
+	}
+
+	notificationSelection, err := strconv.Atoi(notificationSelectionStr)
+	if err != nil {
+		slog.Error("error converting notification ID to int")
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprintf(w, "error converting notification ID to integer type")
+		return
+	}
+
+	newMonitor, err := h.dbHandler.GetMonitors(
+		database.ByUUIDs{Ids: []string{monitor.UUID}},
+		database.ByUrls{Urls: []string{monitor.URL}},
+		database.ByTypes{Types: []string{monitor.Type}},
+		database.ByIntervalSecs{Intervals: []int{monitor.IntervalSecs}},
+		database.ByTimeoutSecs{Timeouts: []int{monitor.TimeoutSecs}},
+		database.ByPorts{Ports: []int{monitor.Port}},
+	)
+	if err != nil || len(newMonitor) != 1 {
+		slog.Error("error getting new monitor from db", "monitor", monitor, "err", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprintf(w, "error adding monitor to db")
+		return
+	}
+
+	monitorToNotification := make(map[int]int)
+	monitorToNotification[newMonitor[0].MonitorID] = notificationSelection
+
+	if err = h.dbHandler.AddMonitorNotification(monitorToNotification); err != nil {
+		slog.Error("error adding new monitor notification", "monitor notification map", monitorToNotification, "err", err)
+		w.WriteHeader(http.StatusInternalServerError)
+		fmt.Fprintf(w, "error adding new monitor notification to db")
+		return
+	}
+
 	w.Header().Set("HX-Redirect", "/monitors")
 }
 

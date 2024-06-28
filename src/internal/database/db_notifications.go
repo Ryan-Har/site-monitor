@@ -134,3 +134,21 @@ func (h *SQLiteHandler) UpdateNotificationAdditionalInfo(notificationSettings No
 	h.writeMutex.Unlock()
 	return nil
 }
+
+func (h *SQLiteHandler) AddMonitorNotification(monitorToNotification map[int]int) error {
+	stmt, err := h.DB.Prepare("INSERT INTO Monitor_Notifications (Monitor_id, Notification_id) VALUES (?, ?)")
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+	h.writeMutex.Lock()
+	defer h.writeMutex.Unlock()
+
+	for k, v := range monitorToNotification {
+		_, err = stmt.Exec(k, v)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}

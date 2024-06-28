@@ -30,7 +30,7 @@ CREATE TABLE "Notifications" (
 CREATE TABLE "Monitor_Notifications" (
 	"Monitor_id"	INTEGER NOT NULL,
 	"Notification_id"	INTEGER NOT NULL,
-	FOREIGN KEY("Notification_id") REFERENCES "Monitor_Notifications"("Notification_id") ON DELETE CASCADE,
+	FOREIGN KEY("Notification_id") REFERENCES "Notifications"("Notification_id") ON DELETE CASCADE,
 	FOREIGN KEY("Monitor_id") REFERENCES "Monitors"("Monitor_id")  ON DELETE CASCADE
 );
 
