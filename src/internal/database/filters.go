@@ -183,3 +183,65 @@ func (f ByNotificationIds) NotificationToSQLite(notificationTable string) (strin
 
 	return fmt.Sprintf(" %s.Notification_id IN (%s) ", notificationTable, generateQuestionMarks(len(f.Ids))), placeholders
 }
+
+type IncidentFilter interface {
+	IncidentToSQLite(incidentTable string) (string, []interface{})
+}
+
+type ByIncidentIds struct {
+	Ids []int
+}
+
+func (f ByIncidentIds) IncidentToSQLite(incidentTable string) (string, []interface{}) {
+	placeholders := make([]interface{}, len(f.Ids))
+	for i, id := range f.Ids {
+		placeholders[i] = id
+	}
+
+	return fmt.Sprintf(" %s.Incident_id IN (%s) ", incidentTable, generateQuestionMarks(len(f.Ids))), placeholders
+}
+
+func (f ByMonitorIds) IncidentToSQLite(incidentTable string) (string, []interface{}) {
+	placeholders := make([]interface{}, len(f.Ids))
+	for i, id := range f.Ids {
+		placeholders[i] = id
+	}
+
+	return fmt.Sprintf(" %s.Monitor_id IN (%s) ", incidentTable, generateQuestionMarks(len(f.Ids))), placeholders
+}
+
+type StartBetween struct {
+	MinEpoch int
+	MaxEpoch int
+}
+
+func (f StartBetween) IncidentToSQLite(incidentTable string) (string, []interface{}) {
+
+	placeholder := make([]interface{}, 2)
+	placeholder[0] = f.MinEpoch
+	placeholder[1] = f.MaxEpoch
+
+	return fmt.Sprintf(" %s.Start_time BETWEEN ? AND ? ", incidentTable), placeholder
+}
+
+type EndBetween struct {
+	MinEpoch int
+	MaxEpoch int
+}
+
+func (f EndBetween) IncidentToSQLite(incidentTable string) (string, []interface{}) {
+
+	placeholder := make([]interface{}, 2)
+	placeholder[0] = f.MinEpoch
+	placeholder[1] = f.MaxEpoch
+
+	return fmt.Sprintf(" %s.End_time BETWEEN ? AND ? ", incidentTable), placeholder
+}
+
+type IsOngoing struct{}
+
+func (f IsOngoing) IncidentToSQLite(incidentTable string) (string, []interface{}) {
+	placeholder := make([]interface{}, 1)
+	placeholder[0] = "nill"
+	return fmt.Sprintf(" %s.End_time is ? ", incidentTable), placeholder
+}

@@ -34,5 +34,13 @@ CREATE TABLE "Monitor_Notifications" (
 	FOREIGN KEY("Monitor_id") REFERENCES "Monitors"("Monitor_id")  ON DELETE CASCADE
 );
 
+CREATE TABLE "Indcidents" (
+	"Incident_id"	INTEGER NOT NULL UNIQUE,
+	"Start_time"	INTEGER NOT NULL,
+	"End_time"	INTEGER,
+	"Monitor_id"	INTEGER NOT NULL,
+	PRIMARY KEY("Incident_id"),
+	FOREIGN KEY("Monitor_id") REFERENCES "Monitors"("Monitor_id")
+);
 --add notifications table to organise which notifications are setup for each user
 --add another table to organise which notification mechanisms are setup for which Monitor
