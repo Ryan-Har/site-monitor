@@ -152,3 +152,44 @@ func (h *SQLiteHandler) AddMonitorNotification(monitorToNotification map[int]int
 	}
 	return nil
 }
+
+type MontitorNotification struct {
+	MonitorID      int
+	NotificationID int
+}
+
+func (h *SQLiteHandler) GetMonitorNotifications(filters ...MonitorNotificationFilter) ([]MontitorNotification, error) {
+	sqlTable := "Monitor_Notifications"
+	query := "SELECT Monitor_id, Notification_id FROM " + sqlTable
+
+	var whereClause []string
+	var args []interface{}
+	for _, filter := range filters {
+		condSql, condArgs := filter.MonitorNotificationToSQLite(sqlTable)
+		if condSql != "" {
+			whereClause = append(whereClause, condSql)
+			args = append(args, condArgs...)
+		}
+	}
+
+	if len(whereClause) > 0 {
+		query += " WHERE " + strings.Join(whereClause, " AND ")
+	}
+
+	rows, err := h.DB.Query(query, args...)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var montitorNotifications []MontitorNotification
+	for rows.Next() {
+		var m MontitorNotification
+		err := rows.Scan(&m.MonitorID, &m.NotificationID)
+		if err != nil {
+			return nil, err
+		}
+		montitorNotifications = append(montitorNotifications, m)
+	}
+	return montitorNotifications, nil
+}

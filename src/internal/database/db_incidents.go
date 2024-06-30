@@ -2,6 +2,7 @@ package database
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 	"strings"
 )
@@ -14,7 +15,7 @@ type Incident struct {
 }
 
 func (h *SQLiteHandler) AddIncidents(incident ...Incident) error {
-	stmt, err := h.DB.Prepare("INSERT INTO Incidents (Incident_id, Start_time, Monitor_id) VALUES (?, ?, ?)")
+	stmt, err := h.DB.Prepare("INSERT INTO Incidents (Start_time, Monitor_id) VALUES (?, ?)")
 	if err != nil {
 		return err
 	}
@@ -22,13 +23,35 @@ func (h *SQLiteHandler) AddIncidents(incident ...Incident) error {
 
 	h.writeMutex.Lock()
 	for _, m := range incident {
-		_, err := stmt.Exec(m.IncidentID, m.StartTime, m.MonitorID)
+		_, err := stmt.Exec(m.StartTime, m.MonitorID)
 		if err != nil {
 			h.writeMutex.Unlock()
 			return err
 		}
 	}
 	h.writeMutex.Unlock()
+	return nil
+}
+
+func (h *SQLiteHandler) CloseIncident(incident Incident) error {
+	if incident.IncidentID == 0 {
+		return errors.New("incident struct does not include the incident id")
+	}
+
+	stmt, err := h.DB.Prepare("UPDATE Incidents SET End_time = ? WHERE Incident_id = ?")
+	if err != nil {
+		return err
+	}
+	defer stmt.Close() // Close the prepared statement
+
+	h.writeMutex.Lock()
+	defer h.writeMutex.Unlock()
+
+	_, err = stmt.Exec(incident.EndTime.Int64, incident.IncidentID)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 

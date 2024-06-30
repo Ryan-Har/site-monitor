@@ -51,6 +51,7 @@ func main() {
 	http.Handle("DELETE /settings/account", fb.AuthMiddleware(http.HandlerFunc(handlers.NewDeleteAccountHandler(*dbh, *fb).ServeHTTP)))
 
 	//forms
+	//TODO: adding a monitor with the same settings as an existing results in 500 error with no feedback on the site. It still adds it though
 	http.Handle("POST /monitors/new", fb.AuthMiddleware(http.HandlerFunc(handlers.NewPostFormHandler(*dbh).NewMonitorForm)))
 	http.Handle("POST /notifications/new", fb.AuthMiddleware(http.HandlerFunc(handlers.NewPostFormHandler(*dbh).NewNotificationForm)))
 

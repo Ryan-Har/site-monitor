@@ -34,7 +34,7 @@ CREATE TABLE "Monitor_Notifications" (
 	FOREIGN KEY("Monitor_id") REFERENCES "Monitors"("Monitor_id")  ON DELETE CASCADE
 );
 
-CREATE TABLE "Indcidents" (
+CREATE TABLE "Incidents" (
 	"Incident_id"	INTEGER NOT NULL UNIQUE,
 	"Start_time"	INTEGER NOT NULL,
 	"End_time"	INTEGER,

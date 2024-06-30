@@ -241,7 +241,19 @@ func (f EndBetween) IncidentToSQLite(incidentTable string) (string, []interface{
 type IsOngoing struct{}
 
 func (f IsOngoing) IncidentToSQLite(incidentTable string) (string, []interface{}) {
-	placeholder := make([]interface{}, 1)
-	placeholder[0] = "nill"
-	return fmt.Sprintf(" %s.End_time is ? ", incidentTable), placeholder
+	placeholder := make([]interface{}, 0)
+	return fmt.Sprintf(" %s.End_time is null ", incidentTable), placeholder
+}
+
+type MonitorNotificationFilter interface {
+	MonitorNotificationToSQLite(notificationTable string) (string, []interface{})
+}
+
+func (f ByMonitorIds) MonitorNotificationToSQLite(monitorNotificationsTable string) (string, []interface{}) {
+	placeholders := make([]interface{}, len(f.Ids))
+	for i, id := range f.Ids {
+		placeholders[i] = id
+	}
+
+	return fmt.Sprintf(" %s.Monitor_id IN (%s) ", monitorNotificationsTable, generateQuestionMarks(len(f.Ids))), placeholders
 }
