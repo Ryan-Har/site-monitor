@@ -33,6 +33,8 @@ func (h *PostFormHandler) NewMonitorForm(w http.ResponseWriter, r *http.Request)
 		return
 	}
 
+	w.Header().Set("HX-Redirect", "/monitors")
+
 	if err = r.ParseForm(); err != nil {
 		slog.Error("error parsing form for newmonitor form post")
 		w.WriteHeader(http.StatusBadRequest)
@@ -91,7 +93,7 @@ func (h *PostFormHandler) NewMonitorForm(w http.ResponseWriter, r *http.Request)
 		database.ByTimeoutSecs{Timeouts: []int{monitor.TimeoutSecs}},
 		database.ByPorts{Ports: []int{monitor.Port}},
 	)
-	if err != nil || len(newMonitor) != 1 {
+	if err != nil || len(newMonitor) < 1 {
 		slog.Error("error getting new monitor from db", "monitor", monitor, "err", err)
 		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Fprintf(w, "error adding monitor to db")
@@ -99,7 +101,7 @@ func (h *PostFormHandler) NewMonitorForm(w http.ResponseWriter, r *http.Request)
 	}
 
 	monitorToNotification := make(map[int]int)
-	monitorToNotification[newMonitor[0].MonitorID] = notificationSelection
+	monitorToNotification[newMonitor[len(newMonitor)-1].MonitorID] = notificationSelection
 
 	if err = h.dbHandler.AddMonitorNotification(monitorToNotification); err != nil {
 		slog.Error("error adding new monitor notification", "monitor notification map", monitorToNotification, "err", err)
