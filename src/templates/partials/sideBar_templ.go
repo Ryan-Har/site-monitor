@@ -67,7 +67,7 @@ func sideBarNavInfo() templ.Component {
 			templ_7745c5c3_Var2 = templ.NopComponent
 		}
 		ctx = templ.ClearChildren(ctx)
-		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<a href=\"/\" class=\"d-flex align-items-center pb-3 mb-md-0 me-md-auto text-decoration-none\"><span class=\"fs-5 d-none d-sm-inline\">Menu</span></a><ul class=\"nav nav-pills flex-column mb-auto  align-items-center align-items-sm-start\" id=\"menu\"><li class=\"nav-item\"><a href=\"/monitors\" class=\"nav-link align-middle px-0\"><i class=\"fs-4 bi-activity\"></i> <span class=\"ms-1 d-none d-sm-inline\">Monitors</span></a></li><li class=\"nav-item\"><a href=\"/incidents\" class=\"nav-link align-middle px-0\"><i class=\"fs-4 bi-exclamation-triangle\"></i> <span class=\"ms-1 d-none d-sm-inline\">Incidents</span></a></li><li class=\"nav-item\"><a href=\"/maintenance\" class=\"nav-link align-middle px-0\"><i class=\"fs-4 bi-wrench\"></i> <span class=\"ms-1 d-none d-sm-inline\">Maintenance</span></a></li></ul>")
+		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString("<a href=\"/\" class=\"d-flex align-items-center pb-3 mb-md-0 me-md-auto text-decoration-none\"><span class=\"fs-5 d-none d-sm-inline\">Menu</span></a><ul class=\"nav nav-pills flex-column mb-auto  align-items-center align-items-sm-start\" id=\"menu\"><li class=\"nav-item\"><a href=\"/monitors\" class=\"nav-link align-middle px-0\"><i class=\"fs-4 bi-activity\"></i> <span class=\"ms-1 d-none d-sm-inline\">Monitors</span></a></li><li class=\"nav-item\"><a href=\"/incidents\" class=\"nav-link align-middle px-0\"><i class=\"fs-4 bi-exclamation-triangle\"></i> <span class=\"ms-1 d-none d-sm-inline\">Incidents</span></a></li></ul>")
 		if templ_7745c5c3_Err != nil {
 			return templ_7745c5c3_Err
 		}
@@ -99,7 +99,7 @@ func sideBarUserSection(name string) templ.Component {
 			var templ_7745c5c3_Var4 string
 			templ_7745c5c3_Var4, templ_7745c5c3_Err = templ.JoinStringErrs(string(name[0]))
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/partials/sideBar.templ`, Line: 45, Col: 29}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/partials/sideBar.templ`, Line: 44, Col: 29}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var4))
 			if templ_7745c5c3_Err != nil {
@@ -109,7 +109,7 @@ func sideBarUserSection(name string) templ.Component {
 			var templ_7745c5c3_Var5 string
 			templ_7745c5c3_Var5, templ_7745c5c3_Err = templ.JoinStringErrs("U")
 			if templ_7745c5c3_Err != nil {
-				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/partials/sideBar.templ`, Line: 47, Col: 17}
+				return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/partials/sideBar.templ`, Line: 46, Col: 17}
 			}
 			_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var5))
 			if templ_7745c5c3_Err != nil {
@@ -123,7 +123,7 @@ func sideBarUserSection(name string) templ.Component {
 		var templ_7745c5c3_Var6 string
 		templ_7745c5c3_Var6, templ_7745c5c3_Err = templ.JoinStringErrs(name)
 		if templ_7745c5c3_Err != nil {
-			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/partials/sideBar.templ`, Line: 50, Col: 57}
+			return templ.Error{Err: templ_7745c5c3_Err, FileName: `templates/partials/sideBar.templ`, Line: 49, Col: 57}
 		}
 		_, templ_7745c5c3_Err = templ_7745c5c3_Buffer.WriteString(templ.EscapeString(templ_7745c5c3_Var6))
 		if templ_7745c5c3_Err != nil {

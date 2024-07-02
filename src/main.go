@@ -30,7 +30,7 @@ func main() {
 	// http.Handle("GET /monitors/{monitorid}/edit", fb.AuthMiddleware(http.HandlerFunc(handlers.NewGetMonitorByID().ServeHTTP)))
 	http.Handle("GET /monitors/getCreateFormInfo", fb.AuthMiddleware(http.HandlerFunc(handlers.NewGetMonitorFormHandler(*dbh).ServeFormContent)))
 	http.Handle("GET /maintenance", fb.AuthMiddleware(http.HandlerFunc(handlers.NewGetMaintenanceHandler().ServeHTTP)))
-	http.Handle("GET /incidents", fb.AuthMiddleware(http.HandlerFunc(handlers.NewGetIncidentsHandler().ServeHTTP)))
+	http.Handle("GET /incidents", fb.AuthMiddleware(http.HandlerFunc(handlers.NewGetIncidentsHandler(*dbh).ServeHTTP)))
 	http.Handle("GET /settings/account", fb.AuthMiddleware(http.HandlerFunc(handlers.NewGetAccountSettingsHandler().ServeHTTP)))
 	http.Handle("GET /settings/notifications", fb.AuthMiddleware(http.HandlerFunc(handlers.NewGetNotificationSettingsHandler(*dbh).ServeHTTP)))
 	http.Handle("GET /settings/notifications/{notificationid}", fb.AuthMiddleware(http.HandlerFunc(handlers.NewGetEditNotificationByID(*dbh).ServeHTTP)))

@@ -30,6 +30,7 @@ type DBHandler interface {
 	CloseIncident(incident Incident) error
 	GetIncidents(filters ...IncidentFilter) ([]Incident, error)
 	DeleteIncidents(filters ...IncidentFilter) error
+	GetIncidentsWithMonitorInfoByUUID(uuid string) ([]IncidentWithMonitor, error)
 }
 
 type SQLiteHandler struct {

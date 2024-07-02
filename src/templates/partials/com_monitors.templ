@@ -6,6 +6,7 @@ import (
     "github.com/Ryan-Har/site-monitor/src/internal/database"
     "time"
     "fmt"
+    "strings"
 )
 
 //MonitorOptions displays the options to add a new monitor
@@ -83,7 +84,7 @@ templ SingleMonitor(info models.MonitorCardGenerationModel) {
                         if info.LastChangeSecs == 0 {
                             { "since monitor started" }
                         } else {
-                            { secondsToHumanReadable(info.LastChangeSecs) }
+                            { FormatDuration(time.Second * time.Duration(info.LastChangeSecs)) }
                         }
                         </div>
                     </div>
@@ -103,7 +104,7 @@ templ SingleMonitor(info models.MonitorCardGenerationModel) {
 templ intervalColumn(intervalInSeconds int) {
     <i class="bi bi-info" data-bs-toggle="tooltip" data-bs-placement="left" 
     data-bs-title={ getTooltipMessage(intervalInSeconds) }></i>  
-    { secondsToHumanReadable(intervalInSeconds) }
+    { FormatDuration(time.Second * time.Duration(intervalInSeconds)) }
 }
 
 templ singleMonitorMenu(monitorId int) {
@@ -117,20 +118,9 @@ templ singleMonitorMenu(monitorId int) {
     </div>
 }
 
-func secondsToHumanReadable(intervalInSeconds int) string {
-    if intervalInSeconds <= 60 {
-        return strconv.Itoa(intervalInSeconds) + " secs"
-    } else if intervalInSeconds <= 3600 {
-        return strconv.Itoa(intervalInSeconds / 60) + " mins"
-    } else if intervalInSeconds <= 259200 { 
-        return strconv.Itoa(intervalInSeconds / 3600) + " hours"
-    } else {
-        return strconv.Itoa(intervalInSeconds / 86400) + " days"
-    }
-}
 
 func getTooltipMessage(intervalInSeconds int) string {
-    return "Refresh happens every " + secondsToHumanReadable(intervalInSeconds) + "."
+    return "Refresh happens every " + FormatDuration(time.Second * time.Duration(intervalInSeconds)) + "."
 }
 
 templ addMonitorFormTitle() {
@@ -397,7 +387,7 @@ templ LastCheckCard(lastCheckSecs int, checkInterval int) {
                         { dateTimeXSecondsAgo(lastCheckSecs) }
                     }
                     <p>
-                    checked every { secondsToHumanReadable(checkInterval) }
+                    checked every { FormatDuration(time.Duration(checkInterval) * time.Second) }
                     </p>    
             </div>
         </div>
@@ -501,4 +491,34 @@ templ ResponseTimeStats(avg int, min int, max int) {
             </div>
         </div>
     </div>
+}
+
+func FormatDuration(d time.Duration) string {
+    days := int(d.Hours()) / 24
+    hours := int(d.Hours()) % 24
+    minutes := int(d.Minutes()) % 60
+    seconds := int(d.Seconds()) % 60
+
+	var parts []string
+	if days > 0 {
+	parts = append(parts, fmt.Sprintf("%d day%s", days, pluralise(days)))
+	}
+	if hours > 0 {
+	parts = append(parts, fmt.Sprintf("%d hour%s", hours, pluralise(hours)))
+	}
+	if minutes > 0 {
+	parts = append(parts, fmt.Sprintf("%d minute%s", minutes, pluralise(minutes)))
+	}
+	if seconds > 0 && len(parts) == 0 { // Only include seconds if no other units
+	parts = append(parts, fmt.Sprintf("%d second%s", seconds, pluralise(seconds)))
+	}
+
+	return strings.Join(parts, ", ")
+}
+
+func pluralise(n int) string {
+	if n != 1 {
+	return "s"
+	}
+	return ""
 }

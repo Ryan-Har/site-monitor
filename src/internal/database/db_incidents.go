@@ -121,3 +121,39 @@ func (h *SQLiteHandler) DeleteIncidents(filters ...IncidentFilter) error {
 
 	return nil
 }
+
+type IncidentWithMonitor struct {
+	Incident
+	UUID string
+	URL  string
+	Type string
+	Port int
+}
+
+func (h *SQLiteHandler) GetIncidentsWithMonitorInfoByUUID(uuid string) ([]IncidentWithMonitor, error) {
+	query := `SELECT i.Incident_id, i.Start_time, i.End_time, i.Monitor_id, m.UUID, m.Url, m.Type, m.Port 
+	FROM Incidents i 
+	LEFT JOIN Monitors m 
+	ON i.Monitor_id = m.Monitor_id 
+	WHERE m.UUID = ?`
+
+	args := make([]interface{}, 1)
+	args[0] = uuid
+
+	rows, err := h.DB.Query(query, args...)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var incidents []IncidentWithMonitor
+	for rows.Next() {
+		var i IncidentWithMonitor
+		err := rows.Scan(&i.IncidentID, &i.StartTime, &i.EndTime, &i.MonitorID, &i.UUID, &i.URL, &i.Type, &i.Port)
+		if err != nil {
+			return nil, err
+		}
+		incidents = append(incidents, i)
+	}
+	return incidents, nil
+}

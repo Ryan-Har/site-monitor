@@ -1,15 +1,22 @@
 package handlers
 
 import (
-	"github.com/Ryan-Har/site-monitor/src/templates"
 	"log/slog"
 	"net/http"
+	"slices"
+
+	"github.com/Ryan-Har/site-monitor/src/internal/database"
+	"github.com/Ryan-Har/site-monitor/src/templates"
 )
 
-type GetIncidentsHandler struct{}
+type GetIncidentsHandler struct {
+	dbHandler database.DBHandler
+}
 
-func NewGetIncidentsHandler() *GetIncidentsHandler {
-	return &GetIncidentsHandler{}
+func NewGetIncidentsHandler(dbh database.DBHandler) *GetIncidentsHandler {
+	return &GetIncidentsHandler{
+		dbHandler: dbh,
+	}
 }
 
 func (h *GetIncidentsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -17,8 +24,13 @@ func (h *GetIncidentsHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) 
 	if err != nil {
 		slog.Warn("error getting user info from context")
 	}
-	c := templates.Incidents(userInfo)
+	incWithMonitor, err := h.dbHandler.GetIncidentsWithMonitorInfoByUUID(userInfo.UUID)
+	if err != nil {
+		slog.Error("error getting incidents with monitor info by uuid", "err", err)
+	}
 
+	slices.Reverse(incWithMonitor) // reverse so newest if first
+	c := templates.Incidents(userInfo, incWithMonitor...)
 	err = templates.Layout("Incidents", c).Render(r.Context(), w)
 	if err != nil {
 		slog.Error("error while rendering incidents template", "err", err.Error())
