@@ -1,7 +1,7 @@
 # Site monitor
 ### A web based app built with Golang, templ and htmx to monitor and notify of any disruption of various endpoints.
 
-You can sign up and check out the hosted version at[site-monitor.rharris.dev](https://site-monitor.rharris.dev/signup)
+You can sign up and check out the hosted version at [site-monitor.rharris.dev](https://site-monitor.rharris.dev/signup)
 
 ## Getting Started
 
